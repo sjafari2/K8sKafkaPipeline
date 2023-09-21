@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "request-sts"
+  namespace: kafkastreamingdata
+  labels:
+    app: "request-sts"
+    serviceSelector: "request-sts"
+spec:
+  selector:
+    matchLabels:
+      app: "request-sts"
+  serviceName: "request-sts-svc"
+  replicas: 1
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: "request-sts"
+    spec:
+      containers:
+        - name: "request-container"
+          image: sjafari2/kafkarequest:latest
+          env:
+            - name: POD_ORDINAL
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: RqstPodMntPath
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-configmap
+                  key: RqstPodMntPath
+            - name: RqstPodSharedPath
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-configmap
+                  key: RqstPodSharedPath
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo ${RqstPodSharedPath}
+              #chmod -R 777 ./${RqstPodSharedPath}  
+              rm -rf ./${RqstPodSharedPath}/*
+              chmod +x runrequest.sh
+              #./runrequest.sh 
+              sleep infinity
+          ports:
+          - containerPort: 9092
+            name: "request-port"
+          - containerPort: 9093
+            name: "exporter-port"
+          resources:
+            requests:
+              memory: "50Gi"
+              cpu: "2"
+            limits:
+              memory: "50Gi"
+              cpu: "2"
+          volumeMounts:
+          - mountPath: app/request-data
+            name: request-data
+          - mountPath: app/request-producer-data
+            name: request-producer-data
+          #- name: config-map-volume
+          #  mountPath: /etc/configmap
+      volumes:
+        - name: request-data
+          persistentVolumeClaim:
+            claimName: request-data
+        - name: request-producer-data
+          persistentVolumeClaim:
+            claimName: request-producer-data
+        #- name: config-map-volume
+        #  configMap:
+        #    name: pipeline-configmap
+            #            items:
+            #            - key: RqstPodMntPath
+            #              path: RqstPodMntPath
+            #            - key: RqstPodSharedPath
+            #              path: RqstPodSharedPath
+      #affinity:
+      #  podAntiAffinity:
+      #    requiredDuringSchedulingIgnoredDuringExecution:
+      #    - labelSelector:
+      #        matchExpressions:
+      #        - key: app
+      #          operator: In
+      #          values:
+      #          - request-sts
+      #          - merge-sts
+      #          - cons-sts
+      #          - prod-sts
+      #          - kafka
+      #          - kafka-zookeeper
+      #      topologyKey: "kubernetes.io/hostname"
+

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: request-notification-service
+  namespace: kafkastreamingdata
+spec:
+  selector:
+    app: request-sts
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+

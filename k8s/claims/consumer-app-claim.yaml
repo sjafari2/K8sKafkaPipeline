@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: consumer-app-data
+  namespace: kafka-pipeline
+spec:
+  storageClassName: rook-cephfs-central
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: "app/consumer-app-data"
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: consumer-app-data
+  namespace: "kafkastreamingdata"
+spec:
+  storageClassName: rook-cephfs-central
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+status: {}

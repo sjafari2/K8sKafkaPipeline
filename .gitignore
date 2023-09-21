@@ -1,0 +1,4 @@
+data
+kafka-temp
+venv
+*.pyc

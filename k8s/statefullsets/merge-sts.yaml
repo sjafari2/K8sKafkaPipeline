@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "merge-sts"
+  namespace: "kafkastreamingdata"
+  labels:
+    app: "merge-sts"
+    serviceSelector: "merge-sts"
+spec:
+  selector:
+    matchLabels:
+      app: "merge-sts"
+  serviceName: "merge-sts-svc"
+  replicas: 1
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: "merge-sts"
+    spec:
+      containers:
+        - name: "merge-container"
+          image: sjafari2/kafkapplication:latest
+          env:
+          - name: POD_ORDINAL
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
+              echo "Pod ordinal value is: $ordinal"
+              chmod +x runmerge.sh 
+              sleep infinity
+          ports:
+          - containerPort: 9092
+            name: "merge-port"
+          - containerPort: 9093
+            name: "exporter-port"
+          resources:
+            requests:
+              memory: "5Gi"
+              cpu: "2"
+            limits:
+              memory: "5Gi"
+              cpu: "2"
+          volumeMounts:
+          - mountPath: app/app-merge-data
+            name: app-merge-data
+          - mountPath: app/merged-clstr-data
+            name: merge-data
+            #      restartPolicy: OnFailure
+      volumes:
+        - name: app-merge-data
+          persistentVolumeClaim:
+            claimName: app-merge-data
+        - name: merge-data
+          persistentVolumeClaim:
+            claimName: merged-data
+#      affinity:
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#              - key: app
+#                operator: In
+#                values:
+#                - merge-sts
+#                - cons-sts
+#                - prod-sts
+#                - kafka
+#                - kafka-zookeeper
+#            topologyKey: "kubernetes.io/hostname"

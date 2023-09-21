@@ -1,0 +1,10 @@
+## Values Defined to Run Simulator
+RequestPath: 'http://127.0.0.1:8000/'
+InputPath: './data'
+OutputPath: './request-shared'
+PodCount: 2
+ProdCount: 2
+StartDate : '2022-8-01-00'
+EndDate : '2022-8-01-05'
+Window : 'hour'
+Wait : 10

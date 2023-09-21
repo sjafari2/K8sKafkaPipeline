@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline-config
+data:
+  ############# KAFKA PROPERTIES #############################
+  KAFKA_TOPIC_COUNT: "10"
+  KAFKA_SERVER_URI_PRODUCER: "kafka-0.kafka-headless.kafkastreamingdata.svc.cluster.local:9092"
+  KAFKA_SERVER_URI_CONSUMER: "kafka.kafkastreamingdata.svc.cluster.local:9092"
+  KAFKA_INSTALL_PATH: "/kafka/bin/"
+   
+  ############# PRODUCER PROPERTIES #############################
+  PRODUCER_COUNT: "2"
+  PRODUCER_TOPIC_COUNT: "20"
+  Producer_Input_Path: "./request-shared"
+  Producer_Pod_Count: "2"
+
+  
+  ############# CONSUMER PROPERTIES #############################
+  bootstrap_servers: "[os.getenv('KAFKA_SERVER_URI')]"
+  auto_offset_reset: "earliest"
+  group_id: "StreamData"
+  max_in_flight_requests_per_connection: "1"
+  enable_auto_commit: "true"
+  auto_commit_interval_ms: "1000"
+  enable.idempotence: "true"
+  Consumer_Pod_Count: "2"
+  CONSUMER_COUNT: "2"
+
+  ############# REQUEST & MERGE PODS PROPERTIES ###############
+  REQUEST_COUNT: "1"
+  MERGE_COUNT: "1"
+
+  ############### ZIKA VARIABLES ##############################
+  ZIKA_DATA_ADDRESS: "./data/zika_data_only_hashtags.csv"
+  RARELIST_DATA_ADDRESS: "./data/rarelist.pkl"
+  h5py_path: "./consumer-app/zika"
+
+  ############## PASCAL-G VARIABLES ########################
+  Column_Range: "500000"
+  Row_Range: "1000"
+  APPLICATION_COUNT: "1"
+  fps: "[ ]"
+  sim1: "dotsim"
+  sim2: "dotsim"
+  thr1: "0.3"
+  thr2: "0.3"
+  outliers_action: "remove"
+  thmls: "[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]"
+  thcls: "[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]"
+  edge_list_path: "./data/network_data/edges"
+  node_edges_path: "./data/network_data/node_edges"
+  log_path_findCl: "./logs/pascal-g/findProbCl"
+  log_path_mergeCl: "./logs/pascal-g/mergeProbFi"
+  csr_matrix_path: "./data/csr_matrix"
+  Vacc_H5path: "./consumer-app/vacc"
+  shared_H5path: "./consumer-app/vacc/2023-06-06/17-10-24"
+  local_clstr_path: "./app-merge-data"  
+  Ukraine_H5path: "./consumer-app/ukraine"
+  
+  ########### REQUEST POD VARIABLES ########################
+  RequestPath: "http://127.0.0.1:8000/"
+  InputPath: "./data"
+  OutputPath: "./request-shared"
+  PodCount: "2"
+  ProdCount: "2"
+  StartDate : "2022-8-01-00"
+  EndDate : "2022-8-01-05"
+  Window : "hour"
+  Wait : "10"
+  RqstPodMntPath: "./request-simulator"
+  RqstPodSharedPath: "./request-shared"

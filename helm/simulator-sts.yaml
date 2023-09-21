@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "request-sts"
+  namespace: kafkastreamingdata
+  labels:
+    app: "request-sts"
+    serviceSelector: "request-sts"
+spec:
+  selector:
+    matchLabels:
+      app: "request-sts"
+  serviceName: "request-sts-svc"
+  replicas: 1
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: "request-sts"
+    spec:
+      containers:
+        - name: "request-sts"
+          image: sjafari2/simulator:latest
+          env:
+            - name: POD_ORDINAL
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: RqstPodMntPath
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-config
+                  key: RqstPodMntPath
+            - name: RqstPodSharedPath
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-config
+                  key: RqstPodSharedPath
+          command: ["/bin/bash", "-c"]
+          args:
+            - "/bin/bash -c 'rm -rf $RqstPodSharedPath/* && chmod +x runrequest.sh && sleep infinity'"
+          ports:
+            - containerPort: 9092
+              name: "request-port"
+            - containerPort: 9093
+              name: "exporter-port"
+          resources:
+            limits:
+              memory: "50Gi"
+              cpu: "4"
+            requests:
+              memory: "50Gi"
+              cpu: "4"
+          volumeMounts:
+            - mountPath: $RqstPodMntPath
+              name: request-simulator
+            - mountPath: $RqstPodSharedPath
+              name: request-shared
+      volumes:
+        - name: request-simulator
+          persistentVolumeClaim:
+            claimName: request-simulator
+        - name: request-shared
+          persistentVolumeClaim:
+            claimName: request-shared
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - request-sts
+                - merge-sts
+                - cons-sts
+                - prod-sts
+                - kafka
+                - kafka-zookeeper
+            topologyKey: "kubernetes.io/hostname"
+

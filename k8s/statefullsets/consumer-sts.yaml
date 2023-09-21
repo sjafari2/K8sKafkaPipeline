@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "consumer-sts"
+  namespace: kafkastreamingdata
+  labels:
+    app: "consumer-sts"
+    serviceSelector: "consumer-sts"
+spec:
+  selector:
+    matchLabels:
+      app: "consumer-sts"
+  serviceName: "consumer-sts-svc"
+  replicas: 2
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: "consumer-sts"
+    spec:
+      containers:
+        - name: "consumer-container"
+          image: sjafari2/kafkaconsumer:latest
+          env:
+          - name: POD_ORDINAL
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              rm -rf ./logs/*
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
+              echo "Pod ordinal value is: $ordinal"
+              chmod +x runconsumer.sh  
+              sleep infinity
+          ports:
+          - containerPort: 9092
+            name: "consumer-port"
+          - containerPort: 9093
+            name: "exporter-port"
+          resources:
+            requests:
+              memory: "10Gi"
+              cpu: "2"
+            limits:
+              memory: "10Gi"
+              cpu: "2"
+          volumeMounts:
+          - mountPath: app/consumer-app-data
+            name: consumer-app-data
+           #      restartPolicy: OnFailure
+        - name: "application-container"
+          image: sjafari2/kafkapplication:latest
+          ports:
+          - containerPort: 9094
+            name: "app-port"
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              rm -rf app/app-merge-data/*
+              rm -rf ./logs/*
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
+              echo "Pod ordinal value is: $ordinal"
+              chmod +x *.sh
+              chmod +x *.py
+              sleep infinity
+          resources:
+            requests:
+              memory: "10Gi"
+              cpu: "2"
+            limits:
+              memory: "10Gi"
+              cpu: "2"
+          volumeMounts:
+          - mountPath: app/consumer-app-data
+            name: consumer-app-data
+          - mountPath: app/app-merge-data
+            name: app-merge-data
+      volumes:
+        - name: consumer-app-data
+          persistentVolumeClaim:
+            claimName: consumer-app-data
+        - name: app-merge-data
+          persistentVolumeClaim:
+            claimName: app-merge-data
+
+#      affinity:
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#              - key: app
+#                operator: In
+#                values:
+#                - cons-sts
+#                - merge-sts
+#                - prod-sts
+#                - kafka
+#                - kafka-zookeeper
+#            topologyKey: "kubernetes.io/hostname"

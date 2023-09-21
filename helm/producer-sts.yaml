@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: StatefulSet      
+metadata:
+  name: "prod-sts"
+  namespace: kafkastreamingdata
+  labels: 
+    app: "prod-sts"
+    serviceSelector: "prod-sts"
+spec:
+  selector: 
+    matchLabels: 
+      app: "prod-sts"
+  serviceName: "prod-sts-svc"
+  replicas: 2
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata: 
+      labels:
+        app: "prod-sts"
+    spec: 
+      containers:
+        - name: "producer-sts"
+          image: sjafari2/kafkaproducer:8-8-2023
+          env:
+          - name: POD_ORDINAL
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: RqstPodSharedPath
+            valueFrom:
+              configMapKeyRef:
+                name: pipeline-config
+                key: RqstPodSharedPath
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              rm -rf ./logs/*
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
+              echo "Pod ordinal value is: $ordinal"
+              chmod +x runproducer.sh
+              #./runproducer.sh $ordinal 
+              sleep infinity
+          ports:
+          - containerPort: 9092
+            name: producer-port
+          - containerPort: 9093
+            name: exporter-port
+          resources: 
+            limits:
+              memory: "100Gi"
+              cpu: "8"
+            requests:
+              memory: "100Gi"
+              cpu: "8"
+          volumeMounts:
+          - mountPath: app/producer
+            name: producer-data
+          - mountPath: app/request-shared 
+            name: request-shared
+          - mountPath: app/keystore
+            name: kafka-keystore-volume
+          - mountPath: app/truststore 
+            name: kafka-truststore-volume
+      serviceAccountName: admin
+      volumes:
+        - name: producer-data
+          persistentVolumeClaim:
+            claimName: producerdata
+        - name: request-shared
+          persistentVolumeClaim:
+            claimName: request-shared
+        - name: kafka-keystore-volume
+          secret:
+            secretName: secret-kafka-controller
+            items:
+              - key: kafka.keystore.jks
+                path: kafka.keystore.jks
+        - name: kafka-truststore-volume
+          secret:
+            secretName: secret-kafka-controller
+            items:
+              - key: kafka.truststore.jks
+                path: kafka.truststore.jks
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - request-sts 
+                - prod-sts
+                - cons-sts
+                - merge-sts
+                - kafka
+                - kafka-zookeeper
+            topologyKey: "kubernetes.io/hostname"
+
+            #        terminationGracePeriodSeconds: 10
+      #  securityContext:
+      #    runAsUser: 1000
+      #    runAsGroup: 3000
+      #    fsGroup: 2000
+      #    fsGroupChangePolicy: "Always"
+      #    restartPolicy: OnFailure
+      #  volumeClaimTemplates:
+      #  - metadata:
+      #      name: "producerdatavacc"
+      #      creationTimestamp: null
+      #      labels:
+      #        io.kompose.service: "producerdatavacc"
+        #      name: kafka-claim-data
+        #        #    spec:
+        #      storageClassName: rook-cephfs-central
+        #      accessModes:
+        #        - ReadWriteOnce
+        #      resources:
+        #        requests:
+        #          storage: 100Gi
+#  - metadata:
+#      name: "producerlogs"
+#      creationTimestamp: null
+#      labels:
+#        io.kompose.service: "producerlogs"
+#      #      name: kafka-claim-data
+#    spec:
+#      storageClassName: rook-cephfs-central
+#      accessModes:
+#        - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 100Gi
+    #  volumes:  
+  #    - hostPath:
+  #        path: /kafka-data
+  #      name: kafka-data
+  #    - hostPath:
+  #        path: /kafka-logs
+  #  - name: kafka-data
+  #    persistentVolumeClaim: 
+  #     i claimName: kafka-claim-data
+    #- hostPath:
+    #  path: /home/sjafari/workspace/StreamDataKubernetes/docker-data/kafka
+    #  - name: kafka-logs
+    #    persistentVolumeClaim: 
+    #      claimName: kafka-claim-logs   
+    #      affinity:
+    #        nodeAffinity:
+    #          requiredDuringSchedulingIgnoredDuringExecution:
+    #            nodeSelectorTerms:
+    #              - matchExpressions:
+    #             - key: topology.kubernetes.io/region
+    #               operator: In
+    #               values:
+    #               - us-central
+ # - name: MY_SERVICE_ACCOUNT_TOKEN
+                #            valueFrom:
+                #              secretKeyRef:
+                #                name: my-admin-token-rkq4p
+                #                key: token               
+
