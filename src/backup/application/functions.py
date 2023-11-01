@@ -125,7 +125,7 @@ def sumCSR(path, files_to_sum):
    
     # Load the first matrix directly as the starting summed matrix
     valid_files_to_sum = files_to_sum #check_hdf5_structure(files_to_sum)
-    print("All hf files have been checked")
+    #print("All hf files have been checked")
     sumed_csr_matrix = load_csr(path + valid_files_to_sum[0])   
     
     for file in valid_files_to_sum[1:]:
@@ -395,4 +395,3 @@ def gatherResults(path):
     # to create fmap_temp from the two lists
     fmap_temp = {fingerprint_keys[i]: fmap_values[i] for i in range(len(fingerprint_keys))}
     return fps_temp, fmap_temp
-

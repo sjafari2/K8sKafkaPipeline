@@ -25,31 +25,34 @@ output_log_path="./logs/${topic_title}/clustering_result/${CURRENT_DATE}/${CURRE
 mkdir -p "${findCl_log_path}"
 mkdir -p "${output_log_path}"
 mkdir -p "${localclstrpath}"
+mkdir -p "${h5py_path}processed"
+
+
 
 while true; do
     # Check the number of files in the directory
     num_files_before=$(ls "${h5py_path}" | wc -l)
 
-    # Sleep for a while
+    echo Sleep for $wait_time seconds
     sleep $wait_time
 
     # Check the number of files in the directory again
     num_files_after=$(ls "${h5py_path}" | wc -l)
-
+    echo There are ${num_files_after} hdf5 files in the directory 	
+    
     # If the number of files hasn't changed, run the clustering algorithm
     
     if [ "$num_files_before" -eq "$num_files_after" ] && [ "$num_files_before" -ne 0 ]; then
 
-        echo Running local clustering algorithm in pod $pod_index
-	for ((i = 0; i < app_count; i++)); do
-	      python3 findClusters.py -pypath "${h5py_path}" -t1 "${thr1}" -t2 "${thr2}" -sim1 "${sim1}" -sim2 "${sim2}" -appindex "${i}" -fps "${fps}" -logpath "${findCl_log_path}" -localclstrpath "${localclstrpath}">"${output_log_path}/findcluster.out" &
-
+       	for ((i = 0; i < ${app_count} ; i++)); do
+	 echo Running local clustering algorithm in pod $pod_index application process ${i}
+         python3 findClusters.py -pypath "${h5py_path}" -t1 "${thr1}" -t2 "${thr2}" -sim1 "${sim1}" -sim2 "${sim2}" -appindex "${i}" -fps "${fps}" -logpath "${findCl_log_path}" -localclstrpath "${localclstrpath}" >"${output_log_path}/findcluster.out" & 
+	pid[$i]=$!
        	done   
+	for ((i = 0; i < np; i++)); do
+  	   wait "${pids[$i]}"
+	done
+	echo "All local application clustring processes have completed."
     fi
 done
-
-
-
-
-
 

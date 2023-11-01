@@ -4,11 +4,11 @@ metadata:
     #  creationTimestamp: null
     #  labels:
     #    io.kompose.service: producer-data
-  name: merged-data
+  name: merged-clstr-data
 spec:
   storageClassName: rook-cephfs-central
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   capacity:
     storage: 5Gi
   hostPath:
@@ -22,12 +22,12 @@ metadata:
     #  creationTimestamp: null
     #  labels:
     #    io.kompose.service: producer-claim-data
-  name: merged-data
+  name: merged-clstr-data
   namespace: "kafkastreamingdata"
 spec:
   storageClassName: rook-cephfs-central
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 5Gi

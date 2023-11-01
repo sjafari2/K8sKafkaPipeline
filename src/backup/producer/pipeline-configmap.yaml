@@ -13,7 +13,7 @@ data:
   PRODUCER_INPUT_PATH: 'request-producer-data'
   PRODUCER_POD_COUNT: "2"
   WAITE_TIME: "10"
-  BATCH_SIZE: "100"
+  BATCH_SIZE: "1000"
   TOPIC_TITLE: "ukrain"
 
 
@@ -28,9 +28,6 @@ data:
   CONSUMER_COUNT: "2"
   CONSUMER_WINDOW_COUNT: "2"
 
-  ##### APPLICATION POD VARIABLES ##########################
-  APPLICATION_WAIT_TIME: "10"
-  APPLICATION_COUNT: "2"
  
   ############### ZIKA VARIABLES ##############################
   ZIKA_DATA_ADDRESS: "./data/zika_data_only_hashtags.csv"
@@ -71,5 +68,3 @@ data:
   ##### MERGE POD VARIABLES ##########################
   MERGE_COUNT: "1"
   merge_path: "./merged-clstr-data"
-  
-

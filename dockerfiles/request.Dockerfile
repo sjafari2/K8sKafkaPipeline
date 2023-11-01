@@ -14,7 +14,9 @@ RUN apt update \
     nano \
     vim \
     screen \
-    procps
+    procps \
+    libpcap-dev \
+    lsof
 
 WORKDIR /kafka
 RUN wget -O - https://downloads.apache.org/kafka/3.4.1/kafka_2.13-3.4.1.tgz | tar xzf - -C /kafka --strip-components=1

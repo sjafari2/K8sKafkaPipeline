@@ -21,4 +21,5 @@ distributed~=2023.1.0
 faker
 pyyaml
 Flask
-
+uvicorn
+fastapi

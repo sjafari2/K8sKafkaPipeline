@@ -11,7 +11,7 @@ spec:
     matchLabels:
       app: "producer-sts"
   serviceName: "producer-sts-svc"
-  replicas: 2
+  replicas: 1
   podManagementPolicy: Parallel
   minReadySeconds: 10
   template:

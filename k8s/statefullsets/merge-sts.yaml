@@ -20,8 +20,8 @@ spec:
         app: "merge-sts"
     spec:
       containers:
-        - name: "merge-container"
-          image: sjafari2/kafkapplication:latest
+        - name: "merge-sts"
+          image: sjafari2/kafkamerge:latest
           env:
           - name: POD_ORDINAL
             valueFrom:
@@ -51,15 +51,15 @@ spec:
           - mountPath: app/app-merge-data
             name: app-merge-data
           - mountPath: app/merged-clstr-data
-            name: merge-data
+            name: merged-clstr-data
             #      restartPolicy: OnFailure
       volumes:
         - name: app-merge-data
           persistentVolumeClaim:
             claimName: app-merge-data
-        - name: merge-data
+        - name: merged-clstr-data
           persistentVolumeClaim:
-            claimName: merged-data
+            claimName: merged-clstr-data
 #      affinity:
 #        podAntiAffinity:
 #          requiredDuringSchedulingIgnoredDuringExecution:

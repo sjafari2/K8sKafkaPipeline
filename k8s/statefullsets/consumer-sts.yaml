@@ -11,7 +11,7 @@ spec:
     matchLabels:
       app: "consumer-sts"
   serviceName: "consumer-sts-svc"
-  replicas: 2
+  replicas: 1
   podManagementPolicy: Parallel
   minReadySeconds: 10
   template:
@@ -53,7 +53,7 @@ spec:
             name: consumer-app-data
            #      restartPolicy: OnFailure
         - name: "application-container"
-          image: sjafari2/kafkapplication:latest
+          image: sjafari2/kafkaapplication:latest
           ports:
           - containerPort: 9094
             name: "app-port"
@@ -82,8 +82,7 @@ spec:
             name: app-merge-data
       volumes:
         - name: consumer-app-data
-          persistentVolumeClaim:
-            claimName: consumer-app-data
+          emptyDir: {}  # Use emptyDir for temporary storage
         - name: app-merge-data
           persistentVolumeClaim:
             claimName: app-merge-data

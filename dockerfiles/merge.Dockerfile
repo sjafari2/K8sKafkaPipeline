@@ -16,7 +16,7 @@ RUN apt update \
     procps \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get install libopenmpi-dev
 WORKDIR /kafka
 RUN wget -O - https://downloads.apache.org/kafka/3.4.1/kafka_2.13-3.4.1.tgz | tar xzf - -C /kafka --strip-components=1
 
@@ -25,7 +25,8 @@ COPY dockerfiles/requirements.txt .
 # Install any dependencies you need
 RUN pip install --upgrade setuptools wheel \
     && pip install -r requirements.txt \
-    && pip3 install requests 
+    && pip3 install requests \
+    && pip3 install mpi4py
 
 # Where your code will be located on the container
 WORKDIR /app
