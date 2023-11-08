@@ -9,11 +9,11 @@ data:
 
   ############# PRODUCER PROPERTIES #############################
   PRODUCER_COUNT: "2"
-  PRODUCER_TOPIC_COUNT: "10"
+  PRODUCER_TOPIC_COUNT: "11"
   PRODUCER_INPUT_PATH: 'request-producer-data'
   PRODUCER_POD_COUNT: "2"
   WAITE_TIME: "10"
-  BATCH_SIZE: "100"
+  BATCH_SIZE: "1000"
   TOPIC_TITLE: "ukrain"
 
 
@@ -22,23 +22,20 @@ data:
   group_id: "StreamData"
   max_in_flight_requests_per_connection: "1"
   enable_auto_commit: "true"
-  auto_commit_interval_ms: "5000"
+  auto_commit_interval_ms: "1000"
   enable.idempotence: "true"
   CONSUMER_POD_COUNT: "2"
   CONSUMER_COUNT: "2"
   CONSUMER_WINDOW_COUNT: "2"
 
-  ##### APPLICATION POD VARIABLES ##########################
-  APPLICATION_WAIT_TIME: "10"
-  APPLICATION_COUNT: "1"
  
   ############### ZIKA VARIABLES ##############################
   ZIKA_DATA_ADDRESS: "./data/zika_data_only_hashtags.csv"
   RARELIST_DATA_ADDRESS: "./data/rarelist.pkl"
 
   ############## PASCAL-G VARIABLES ########################
-  Column_Range: "500000"
-  Row_Range: "500000"
+  Column_Range: "100000"
+  Row_Range: "1000"
   APPLICATION_COUNT: "1"
   fps: "[ ]"
   sim1: "dotsim"
@@ -71,5 +68,3 @@ data:
   ##### MERGE POD VARIABLES ##########################
   MERGE_COUNT: "1"
   merge_path: "./merged-clstr-data"
-  
-
