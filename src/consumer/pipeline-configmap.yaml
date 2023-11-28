@@ -24,8 +24,8 @@ data:
   enable_auto_commit: "true"
   auto_commit_interval_ms: "5000"
   enable.idempotence: "true"
-  CONSUMER_POD_COUNT: "2"
-  CONSUMER_COUNT: "2"
+  CONSUMER_POD_COUNT: "1"
+  CONSUMER_COUNT: "1"
   CONSUMER_WINDOW_COUNT: "2"
 
   ##### APPLICATION POD VARIABLES ##########################

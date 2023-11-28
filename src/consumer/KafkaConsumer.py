@@ -21,7 +21,7 @@ class Consumer:
         # Define Variables
         self.serializer = helper.Serializer()
         self.hlpr = helper.Tools()
-        self.bootstrap_servers = ["pipeline-kafka.kafkastreamingdata.svc.cluster.local:9092"]
+        self.bootstrap_servers = ["pipe-kafka.kafkastreamingdata.svc.cluster.local:9092"]
        # self.bootstrap_servers = serveruri[0].strip('["]')
         #print(f"type uri is {type(self.bootstrap_servers)}")
         #print(f" Consumer URIs are {self.bootstrap_servers}")
@@ -37,9 +37,9 @@ class Consumer:
                 #'max_partition_fetch_bytes':320 * 1024,  # Set the maximum partition fetch bytes to 320 KB
                 #'fetch_max_bytes':320 * 1024,  # Set the maximum fetch bytes to 320 KB
                 'enable_auto_commit': True,
-                'auto_offset_reset' : "earliest",
+                'auto_offset_reset' : "latest",
                 'api_version':(0,10),
-                'group_id' : "StreamData",
+                'group_id' : "pipe",
                 #max_in_flight_requests_per_connection =  flight_req,
                 'auto_commit_interval_ms' : 5000,
                 **consumer_config_args
@@ -91,33 +91,47 @@ class Consumer:
         try:
             self.subscribe_to_topics(topics)
             #print(f"Topic is {topic}")
-            # assign customer to topics
+            # assign customer to toipics
            # self.assign_to_topic(topics)
             #self.consumer.seek_to_end()
+            unique_rows = set()
+            unique_columns = set()
             while True:
                  msg = self.poll(5000,1000)
                  if not msg.items():
+                    
                      print("No New message")
-                     time.sleep(5)
+                     if (len(unique_rows)==len(unique_columns)):
+                         print(f" List of unique words are {unique_rows}")
+                         print(f" Number of unique words is {len(unique_rows)}")
+                     else:
+                         print(f" Number of unique words in rows  {len(unique_rows)}")
+                         print(f" Number of unique words in columns is {len(unique_columns)}")
+                         if (len(unique_rows)>len(unique_columns)):                          
+                             print(f" unique rows - unique columns are {unique_rows-unique_columns}")
+                         elif (len(unique_columns)> len(unique_rows)):
+                             print(f" unique columns - unique rows  are {unique_columns-unique_rows}")
+
+                     time.sleep(30)
                      continue
 
                  elif 'error' in msg:
-                   print("Error in getting data by kafka consumer")
-                   print(f"msg['error']")
-                   continue
+                     print("Error in getting data by kafka consumer")
+                     print(f"msg['error']")
+                     continue
                  else:
-                    consume_method = self.consumer_methods.get(topicTitle)
-                    if not consume_method:
+                     consume_method = self.consumer_methods.get(topicTitle)
+                     if not consume_method:
                         raise ValueError(f"No processing method found for topic: {topicTitle}")
                     
-                    consume_method(msg, **kwargs)
+                     consume_method(msg,unique_rows,unique_columns, **kwargs)
                
         except Exception as ex:
             print(f"Can't poll due to exception : {ex}")
             pass
 
 
-    def ukrain_consume(self,msg,col_range,pod_index, cindex, file_path):
+    def ukrain_consume(self,msg,unique_rows,unique_columns,col_range,pod_index,cindex,file_path):
         row = []
         col = []
         data = []
@@ -128,17 +142,28 @@ class Consumer:
                 msg_value = eval(m.value)
                 #print(f" message value is {msg_value}")
                 msgkey = list(msg_value.keys())[0]
+               # print(f" type msgvalue is {type(msg_value)}")
+               # print(f" msg key is {msgkey}")
+                unique_rows.add(msgkey)
                 msglst = msg_value[msgkey]
-                #print(f"message list is {msglst}")
-                lst = list(itertools.chain.from_iterable(msglst))
-                for index, value in enumerate(lst):
-                    col.append(value)
-                    row.append(msgkey)
-                    data.append(1)
-                    catched = catched + 1
-                    #droped = droped+1
-        print(f"Number of catched messages are {catched}")
+               # print(f"message list is {msglst}")
+               # print(f" type msglist is {type(msglst)}")
+               # lst = list(itertools.chain.from_iterable(msglst))
+               # print(f" type list is {type(lst)}") 
+                if isinstance(msglst, list):
+                    for index, value in enumerate(msglst):
+                        col.append(value)
+                        row.append(msgkey)
+                        unique_columns.add(value)
+                        data.append(1)
+                        catched = catched + 1
+                        #droped = droped+1
+                    # print(f"Number of catched messages are {catched}")
+                else:
+                    print(f"Skipping non-iterable element: {msglst}")
         filename = "consumer-"+str(cindex)+"-pod-"+str(pod_index)
+        print(f"Number of unique words in rows until this itration is {len(unique_rows)}")
+        print(f"Number of unique words in columns until this itration is {len(unique_columns)}")
         try:
             self.hlpr.save_matrix(filename, file_path, col, row, data, col_range)
             print("Done with writing a CSR matrix")

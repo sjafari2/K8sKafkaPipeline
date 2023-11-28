@@ -5,7 +5,7 @@ import hdf5
 import math
 from datetime import datetime
 from scipy.sparse import csr_matrix
-
+import shutil
 
 class Clock:
     def __init__(self, startTime):
@@ -48,7 +48,7 @@ class Tools:
     # Insert date-time string into the filename before the extension
         base_filename, file_extension = os.path.splitext(filename)
         new_filename = f"{base_filename}_{date_time_str}{file_extension}"
-
+        
         row_range = 500000
         #print(f"Row range is {row_range}")
         os.makedirs(filepath, exist_ok=True)
@@ -73,8 +73,10 @@ class Tools:
        if not os.path.exists(processed_dir):
            os.makedirs(processed_dir)
        for f in h5_files:
-           os.rename(os.path.join(h5pypath, f), os.path.join(processed_dir, f))
-
+           source_path = os.path.join(h5pypath, f)
+           destination_path = os.path.join(processed_dir, f)
+           shutil.move(source_path, destination_path)
+             
 
     def produceFakeData(self):
         # Create Faker object
@@ -157,3 +159,4 @@ class Serializer:
         except Exception as ex:
             print(f"Error is {ex}")
             return None
+

@@ -46,9 +46,15 @@ class Producer:
             print(str(ex))
     
     def send_message(self, topic, message):
-        self.producer.send(topic, value=message)
-        self.producer.flush()
-    
+        try:
+            self.producer.send(topic, value=message)
+            self.producer.flush()
+            print(f"Message successfully sent to topic '{topic}'")
+        except Exception as e:
+            # Log any exceptions that occur during send
+            print(f"Error sending message to topic '{topic}': {e}")
+ 
+
     def close(self):
 
         self.producer.close()
@@ -78,7 +84,7 @@ class Producer:
     def ukrain_process(self, filenames, topicTitle, nprod , num_topics, podindex, prodindex, batchsize, column_range, inputpath):
 
         sindex = podindex * batchsize * nprod + prodindex * batchsize
-
+        unique_words = set()
         for filename in filenames:
             with open(filename, 'r', encoding='utf-8') as f:
                 header = f.readline().split(',')
@@ -87,8 +93,8 @@ class Producer:
            # while (True):
             print(f'iteration={itr}')
             itr = itr + 1
-            df = pd.read_csv(filename, lineterminator='\n', names=header, header=0, nrows=batchsize, skiprows=sindex,
-                                 usecols = header , encoding='utf-8')
+            df = pd.read_csv(filename, lineterminator='\n', names=header, header=0, nrows=batchsize, skiprows=sindex, usecols = header, encoding='utf-8')
+           # print("df is read")
             if df.shape[0] == 0:
                 print('EOF')
                 break
@@ -107,6 +113,7 @@ class Producer:
                 
                 rangehash = partial(helper2.rangeHash, r = column_range)
 
+                print("start finding word pairs")
                 for i in range(len(df)):
                     df['word-pairs_ls'] = list(map(lambda x: list(itertools.permutations(x, r=2)), df['text']))
                 df_series = df['word-pairs_ls'].explode().apply(pd.Series)
@@ -116,18 +123,36 @@ class Producer:
                 dfResult = df_series.groupby('word1').agg(list).apply(lambda x: list(zip(*x)), axis=1)
                 for i in range(dfResult.shape[0]):
 
-
                         #producerTimestamp = self.hlpr.TimestampEvent()
                      print('----------------------------------------------------------------')
-                        #print("Producer is Sending Data at: " + str(producerTimestamp) + " ms")
+                     print("Producer is Sending Data")
                      hashTopic = dfResult.index[i]
+                     #word = helper2.get_word_from_hash(hashTopic)  # Lookup the word from the hash
                      key = hashTopic % num_topics
-                     topic = topicTitle+"_"+str(key)
+                     topic = f"{topicTitle}_{key}"#, {word}"
                      print (f" Topic is {topic}")
-                     valuedict = str({hashTopic: dfResult.iloc[i]})
+                     flat_list = [item for sublist in dfResult.iloc[i] for item in sublist]
+                     dictkey= f"{key}"#, {word}"                                    #dict_keyi = str(key) + ", " + word
+                    # print(f" type word is {type(word)}")
+                    # print(f" type dictkey is {type(dictkey)}")
+                    # valuedict = {dictkey: flat_list}
+                    # valuedict = str({hashTopic: dfResult.iloc[i]})
+                     valuedict = str({hashTopic: flat_list})
                      print(f"ValueDict ={valuedict}")
+
+                     # Find the number of unique words in the dictionary including the key
+                     # Initialize a set with the key
+                     unique_words.add(hashTopic)
+                     for value in flat_list:
+                         unique_words.add(value)
+                     #words_count = len(words_values)  # the word count in each message
+                     print(f"Unique words count until now is {len(unique_words)}")
+                     #headers = [('words_count', bytes(str(words_count), encoding ='utf-8'))] ## send the word count as header through producer
                      self.send_message(topic, valuedict)
                      print('****************************************************************')
+        words_len = len(unique_words)
+        print(f" Number of unique words producer sent through Kafka is : {words_len}")
+        print(f" Unique words producer sent through Kafka are : {unique_words}")
         os.remove(filename)
 
     def seizure_process(self, filenames, topicTitle, _range):

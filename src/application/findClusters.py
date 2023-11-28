@@ -6,6 +6,8 @@ import pickle
 from os import listdir
 from os.path import isfile, join
 import helper
+import time
+from datetime import datetime
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Run Find Cluster algorithm")
@@ -14,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('-t2', '--t2',required=True, type=float)            # second threshold
     parser.add_argument('-sim1', '--sim1',required=True)                    # first threshold metric
     parser.add_argument('-sim2', '--sim2',required=True)                    # second threshold metric
-    parser.add_argument('-appindex', '--appindex',required=True)             # application index
+    parser.add_argument('-appindex', '--appindex',required=True)            # application index
     parser.add_argument('-fps', '--fps',required=True)                      # fps
     parser.add_argument('-logpath',  '--logpath',default="")                # Path of logs
     parser.add_argument('-localclstrpath', '--localclstrpath',default="")   # Path of local clusters
@@ -38,23 +40,34 @@ if __name__ == '__main__':
 
 
     #load files from directory into list
-    app_pattern = f"consumer-{appindex}-"
+#    app_pattern = f"consumer-{appindex}-"
     h5_files = sorted([f for f in listdir(h5pypath) 
                    if isfile(join(h5pypath, f)) 
-                   if 'h5' in f 
-                   if app_pattern in f])
+                   if 'pickle' in f]) 
+#                   if app_pattern in f])
   
     #print(f"hdf files are {h5_files}")
-    
-    csr_matrixg = sumCSR (h5pypath, h5_files)
-    print(f"shape of csr matrix is {csr_matrixg.shape}")
+    #print(f" type of hf_files is {type(h5_files)}")
+    print(f"There are {len(h5_files)} pickle files")
+
+    try:
+        csr_matrixg = sumPickle(h5pypath, h5_files)
+        print(f"shape of csr matrix is {csr_matrixg.shape}")
+    except Exception as ex:
+        print("Could not create SummedCSR matrix")
+        print(str(ex))
     fps = [] 
     fps_temp, fmap_temp, fmap_oultiers = findProbabilisticClusters(csr_matrixg, fps, log_path, similarity=sim1, threshold=t1)
-    fpsname  = str(clrpath)+'/'+str(f)+'_fps_temp.pickle'
-    fmapname = str(clrpath)+'/'+str(f)+'_fmap_temp.pickle'
+    
+    # Get current date and time
+    print("start to write the result of local clustering")
+    now =datetime.now()
+    date_time_str = now.strftime("%Y%m%d_%H%M%S")
+
+    fpsname  = str(clrpath)+'/'+date_time_str+'_fps_temp.pickle'
+    fmapname = str(clrpath)+'/'+date_time_str+'_fmap_temp.pickle'
     try:
         os.makedirs(os.path.dirname(clrpath), exist_ok=True)
-        os.makedirs(os.path.dirname(fmappath), exist_ok=True)
     except Exception as ex:
         print(str(ex))
     try:
@@ -70,9 +83,15 @@ if __name__ == '__main__':
     except Exception as ex:
         print(str(ex))
 
-    hlpr = helper.Tools()
-    hlpr.move_to_processed(h5_files,h5pypath) 
+    try:
+        hlpr = helper.Tools()
+        hlpr.move_to_processed(h5_files,h5pypath) 
+        print ("Done with moving files to processed directory")
+    except Exception as ex:
+        print(str(ex))
+
         #os.remove(h5pypath+'/'+f)
         #print(f'Clusters found:{len(pruned_fmap)}')
         #print(f'Clusters merged: {len(fmap_temp)-len(pruned_fmap)}')
         #print(f'Remaining clusters: {len(pruned_fmap)}')
+

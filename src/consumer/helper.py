@@ -55,14 +55,14 @@ class Tools:
         os.makedirs(filepath, exist_ok=True)
         matrix = csr_matrix((data, (row, col)), shape=(row_range, col_range))
         
-        print("Matrix shape:", matrix.shape)
-        print("Matrix non-zero elements:", matrix.nnz)
-        print("Row indices:", row)
-        print("Column indices:", col)
+        #print("Matrix shape:", matrix.shape)
+        #print("Matrix non-zero elements:", matrix.nnz)
+        #print("Row indices:", row)
+        #print("Column indices:", col)
         
         extension = '.lck'
         lck_filename = filepath+ new_filename + extension
-        print(f" lock filename is {lck_filename}") 
+        #print(f" lock filename is {lck_filename}") 
         try:
             with open(lck_filename, 'wb') as f:
                 pickle.dump(matrix, f)

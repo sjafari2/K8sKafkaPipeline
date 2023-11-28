@@ -8,10 +8,10 @@ data:
   KAFKA_INSTALL_PATH: "/kafka/bin/"
 
   ############# PRODUCER PROPERTIES #############################
-  PRODUCER_COUNT: "2"
+  PRODUCER_COUNT: "1"
   PRODUCER_TOPIC_COUNT: "11"
   PRODUCER_INPUT_PATH: 'request-producer-data'
-  PRODUCER_POD_COUNT: "2"
+  PRODUCER_POD_COUNT: "1"
   WAITE_TIME: "10"
   BATCH_SIZE: "1000"
   TOPIC_TITLE: "ukrain"

@@ -53,6 +53,23 @@ h5py_path="${data_H5PY_PATH}/Pod_${pod_index}/"
 mkdir -p ${log_path}
 mkdir -p ${h5py_path}
 
+# Function to kill existing mainConsumer.py processes
+
+kill_existing_processes() {
+    echo "Checking for existing mainConsumer.py processes..."
+    pgrep -f mainConsumer.py > /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Found existing mainConsumer.py processes. Killing them..."
+        pkill -f mainConsumer.py
+    else
+        echo "No existing mainConsumer.py processes found."
+    fi
+}
+
+# Call the function to kill existing processes
+kill_existing_processes
+
+
 #for ((i = 0; i < nconsumers; i++)); do
 
 #    echo Running Consumers[$i] in pod ${pod_index}

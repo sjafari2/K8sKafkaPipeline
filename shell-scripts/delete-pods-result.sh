@@ -6,9 +6,6 @@ source_paths=("app/consumer-app-data" "app/app-merge-data" "app/merged-clstr-dat
 selector_pods=("consumer" "consumer" "merge")
 container_names=("consumer-sts" "application-sts" "merge-sts")
 
-# Define the destination directory on the local machine
-destination="./kafka-temp/data/pickles-11-17-2023"
-
 # Loop through the source paths and pods
 for i in "${!source_paths[@]}"; do
     source_path="${source_paths[i]}"
@@ -20,9 +17,9 @@ for i in "${!source_paths[@]}"; do
 
     if [ -n "$matching_pods" ]; then
         for pod in $matching_pods; do
-            # Use kubectl exec to run a command in the specified container and then kubectl cp to copy the data
-            kubectl exec -n "$namespace" -c "$container_name" "$pod" -- cp -r "/$source_path" "$destination"
-            echo "Copied data from $pod:/$source_path to $destination"
+            # Use kubectl exec to run a command in the specified container to delete the contents inside the subfolders
+            kubectl exec -n "$namespace" -c "$container_name" "$pod" -- find "/$source_path" -mindepth 2 -delete
+            echo "Deleted contents inside $pod:/$source_path (subfolders preserved)"
         done
     else
         echo "No pods with the specified source path '$source_path' found in namespace '$namespace'."

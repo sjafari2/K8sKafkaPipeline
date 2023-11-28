@@ -8,7 +8,9 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 import pickle
-
+from helper import *
+import os
+import logging
 
 def buildGraph(edge_list_path, network):
     '''
@@ -60,7 +62,7 @@ def assignConsumerOutput2Algorithm(path, n):
     
     return file_assignment
 #---------------------------------------------------------------------------------------------------------
-def check_hdf5_structure(files_list):
+def check_hdf5_structure(path,files_list):
     '''
     INPUT
         files_list: list of hdf5 files to be checked
@@ -69,9 +71,20 @@ def check_hdf5_structure(files_list):
 
     '''
     valid_files = []  # List to store files that are structured correctly
-
+    #file_name = "consumer-2-pod-0-20231101-185246.h5" 
+    #file_path = "./consumer-app-data/Pod_0/"+file_name
+    #files_list = [file_name]
     for file in files_list:
         is_valid = True  # Flag to check if the current file is valid
+         # Check if the file exists before attempting to open it
+        print(f" file is {file}") 
+        file_path =  path + file
+        print(f" file path is {file_path}")
+
+        if not os.path.exists(file_path):
+
+            print(f"File '{file}' does not exist.")
+            continue  # Skip to the next file 
         
         with h5py.File(file, 'r') as f:
             # Check if 'csr_matrixg' group exists
@@ -111,6 +124,147 @@ def check_hdf5_structure(files_list):
     return valid_files 
 
 # -------------------------------------------------------------------------------------------------------------
+def save_summed_matrix(filename, filepath, col, row, data):
+    # Get current date and time
+        now =datetime.now()
+        date_time_str = now.strftime("%Y%m%d_%H%M%S")
+    
+    # Insert date-time string into the filename before the extension
+        base_filename, file_extension = os.path.splitext(filename)
+        new_filename = f"{base_filename}_{date_time_str}{file_extension}"
+        
+        row_range = 100000
+        col_range = 500000
+        #print(f"Row range is {row_range}")
+        os.makedirs(filepath, exist_ok=True)
+        matrix = csr_matrix((data, (row, col)), shape=(row_range, col_range))
+        extension = 'lck'
+    
+    # Use the new filename with the date-time string
+        hdf5.csr2h5py(matrix, os.path.join(filepath, new_filename), extension)
+        os.rename(os.path.join(filepath, new_filename + '.' + extension), os.path.join(filepath, new_filename + '.h5'))
+
+#---------------------------------------------------------------------------- 
+
+def count_zero_rows_columns(csr_matrix):
+    # Count the number of zero rows and zero columns in the CSR matrix
+    zero_rows = np.sum(np.sum(csr_matrix, axis=1) == 0)
+    zero_columns = np.sum(np.sum(csr_matrix, axis=0) == 0)
+    return zero_rows, zero_columns
+
+#------------------------------------------------------------------------------
+
+def count_nonzero_rows_columns(csr_matrix):
+    '''
+    Count the number of non-zero rows and non-zero columns in a CSR matrix.
+
+    INPUT:
+        csr_matrix: The CSR matrix to count non-zero rows and columns in.
+
+    OUTPUT:
+        nonzero_rows: Number of non-zero rows.
+        nonzero_columns: Number of non-zero columns.
+    '''
+    nonzero_rows = np.sum(np.sum(csr_matrix, axis=1) != 0)
+    nonzero_columns = np.sum(np.sum(csr_matrix, axis=0) != 0)
+    return nonzero_rows, nonzero_columns
+
+#-------------------------------------------------------------------------------
+
+def sumPickle(path, files_to_sum):
+    '''
+    INPUT
+        path: path where consumer output files are
+        files_to_sum: list of pickle files
+    OUTPUT
+        summed_csr_matrix
+    '''
+    first_file = files_to_sum[0]
+    summed_csr_matrix = None
+    unique_rows = set()
+    unique_columns = set()
+
+    try:
+        with open(os.path.join(path, first_file), 'rb') as fp:
+            summed_csr_matrix = pickle.load(fp)
+            unique_rows.update(summed_csr_matrix.nonzero()[0])
+            unique_columns.update(summed_csr_matrix.nonzero()[1])
+
+        for file in files_to_sum[1:]:
+            with open(os.path.join(path, file), 'rb') as fp:
+                csr_matrix = None
+                try:
+                    csr_matrix = pickle.load(fp)
+                    unique_rows.update(csr_matrix.nonzero()[0])
+                    unique_columns.update(csr_matrix.nonzero()[1])
+                    
+                except EOFError as e:
+                    # Handle the truncated file (skip it)
+                    warnings.warn(f"Skipping '{file}' due to a truncated pickle file.")
+                except Exception as ex:
+                    print(f"Exception {ex} happened while loading '{file}'")
+
+                if csr_matrix is not None:
+                    if summed_csr_matrix is None:
+                        summed_csr_matrix = csr_matrix
+                    else:
+                        summed_csr_matrix += csr_matrix
+
+    except Exception as ex:
+        print(f"Exception {ex} happened while loading '{first_file}'")
+
+    if summed_csr_matrix is not None:
+
+        #num_rows, num_cols = summed_csr_matrix.shape
+        #num_rows = np.count_nonzero(summed_csr_matrix.sum(axis=1))
+        #num_cols = np.count_nonzero(summed_csr_matrix.sum(axis=0))
+        
+        # Get the number of unique rows and columns after the operation
+        num_unique_rows = len(unique_rows)
+        num_unique_columns = len(unique_columns)
+
+        
+        print(f"Number of Unique Rows : {num_unique_rows}")
+        print(f"Number of Unique Columns : {num_unique_columns}")
+        
+        # Save the summed CSR matrix using your provided function
+        with open('./complete_csr_matrix.pickle', 'wb') as fp:
+            pickle.dump(summed_csr_matrix, fp)
+
+        # Call the function to count non-zero rows and columns for summed csr matrix
+        nonzero_rows_after, nonzero_columns_after = count_nonzero_rows_columns(summed_csr_matrix)
+
+        # Print or use the counts after the operation as needed
+        print(f"Summed CSR Matrix Non-Zero Rows Count: {nonzero_rows_after}")
+        print(f"Summed CSR Matrix Non-Zero Columns Count: {nonzero_columns_after}") 
+    
+    return summed_csr_matrix
+'''
+def sumPickle(path, files_to_sum):
+    if not files_to_sum:
+        raise ValueError("The provided files_to_sum list is empty!")
+
+    #print("Initialize the summed_csr_matrix as an empty CSR matrix")
+    try:
+        summed_csr_matrix = csr_matrix((500000, 500000))
+    except Exception as ex:
+        print(f" exception {ex} happend while initializing the metrix")
+    #print(f" type file_to_sum is {type(files_to_sum)}")
+    for file in files_to_sum:
+        print(f" file is {file}")
+        try:
+            with open(os.path.join(path, file), 'rb') as f:
+                loaded_matrix = pickle.load(f)
+               # print(f"csr metrix is {loaded_matrix}")
+                summed_csr_matrix += loaded_matrix
+        except Exception as ex:
+            print(f"Exception {ex} happened")
+            return None
+
+    return summed_csr_matrix
+    '''
+# ----------------------------------------------------------------------------
+
 def sumCSR(path, files_to_sum):
     '''
     INPUT
@@ -124,15 +278,29 @@ def sumCSR(path, files_to_sum):
         raise ValueError("The provided files_to_sum list is empty!")
    
     # Load the first matrix directly as the starting summed matrix
-    valid_files_to_sum = files_to_sum #check_hdf5_structure(files_to_sum)
-    print("All hf files have been checked")
-    sumed_csr_matrix = load_csr(path + valid_files_to_sum[0])   
+    valid_files_to_sum = files_to_sum #check_hdf5_structure(path,files_to_sum)
+    #print(f"valid files to sum are {valid_files_to_sum}")
+    try:
+        sumed_csr_matrix = load_csr(path + valid_files_to_sum[0])   
+        for file in valid_files_to_sum[1:]:
+            csr_matrix = load_csr(path + file)
+            sumed_csr_matrix+=csr_matrix
+    except Exception as ex:
+        print(f" Exception {ex} happend")
+        return None
+    # Verify the CSR matrix data
+    assert len(sumed_csr_matrix.indices) == len(sumed_csr_matrix.indptr) - 1
+    assert len(sumed_csr_matrix.indices) == len(sumed_csr_matrix.data) 
     
-    for file in valid_files_to_sum[1:]:
-        csr_matrix = load_csr(path + file)
-        sumed_csr_matrix+=csr_matrix
-        
-    
+    # Save the summed CSR matrix using your provided function
+    save_summed_matrix(
+            filename="Summed_CSR_Matrix",
+            filepath="./app-merge-data/",
+            col=sumed_csr_matrix.indices,
+            row=sumed_csr_matrix.indptr[:-1],  # Assuming you want the indptr values minus the last
+            data=sumed_csr_matrix.data,
+           # col_from_range=sumed_csr_matrix.shape[1]  # Assuming this is what you meant by col_from_range
+        )
     return sumed_csr_matrix
 # -------------------------------------------------------------------------------------------------------------
 
@@ -395,4 +563,3 @@ def gatherResults(path):
     # to create fmap_temp from the two lists
     fmap_temp = {fingerprint_keys[i]: fmap_values[i] for i in range(len(fingerprint_keys))}
     return fps_temp, fmap_temp
-

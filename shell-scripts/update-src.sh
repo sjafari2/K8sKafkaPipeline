@@ -30,18 +30,20 @@ list_and_count_files() {
     echo "List of files copied  in $destination_path:"
     echo "$files_list"
     echo "Total number of files copied: $num_files"
+    echo "###############################################################################"
 }
 
 
+
 # Define the pods and their corresponding destination paths
-pods=("consumer" "producer" "request" "merge")
+pods=("consumer-sts" "producer-sts" "request-sts" "merge-sts")
 destinations=("src/consumer" "src/producer" "src/request" "src/merge")
 
 
 # Loop through the pods and copy files based on their extensions
 for ((i=0; i<${#pods[@]}; i++)); do
     
-    pod="${pods[i]}"-sts-0
+    pod="${pods[i]}"-0
     destination="${destinations[i]}"
     
     echo "Copying files for $pod"

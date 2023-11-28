@@ -38,6 +38,17 @@ stop_words = set(stop_words)
 
 #print("Stopwords length = {}".format(len(stop_words)))
 
+# Global dictionary to keep track of word-to-hash mappings
+word_hash_map = {}
+
+
+def get_word_from_hash(hash_value):
+    # Inverse lookup in the word_hash_map
+    for word, hash_val in word_hash_map.items():
+        if hash_val == hash_value:
+            return word
+    return "Unknown"  # Return "Unknown" if hash not found
+
 
 def stripStopWords(string):
     if string not in stop_words:
@@ -103,7 +114,9 @@ def cleanHashtags(hashtag_list):
 
 
 def rangeHash(s,r):  ### takes a hashtag and returns hash value
-    return int(hashlib.md5(s.encode('utf8')).hexdigest(),16) % r
+    hash_value = int(hashlib.md5(s.encode('utf8')).hexdigest(),16) % r
+    word_hash_map[s] = hash_value
+    return hash_value
 
 def orderAdjMatrix(graph, fmap):
     nodes = list(graph.nodes)

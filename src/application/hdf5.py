@@ -35,13 +35,21 @@ def coo2h5py(coo_matrixg,filename):
 
 def load_csr(file):
     ''' reads in a h5py file and constructs a csr matrix; CSR constructed from (dat, (row, col)) '''
-    f = h5py.File(file,'r')
-    g2 = f['csr_matrixg']
-    csr_matrixg2 = csr_matrix((g2['data'][:],g2['indices'][:], g2['indptr'][:]), g2.attrs['shape'])
+    # Check if the file exists before attempting to open it
+   # if not os.path.exists(file):
+   #     print(f"File '{file}' does not exist.")
+   #     return None
+    try:
+        f = h5py.File(file,'r')
+        g2 = f['csr_matrixg']
+        csr_matrixg2 = csr_matrix((g2['data'][:],g2['indices'][:], g2['indptr'][:]), g2.attrs['shape'])
 
-    f.close()
-    return csr_matrixg2
-
+        f.close()
+        return csr_matrixg2
+    
+    except Exception as e:
+        print(f"Error reading {file}: {e}")
+        return None
 # -------------------------------------------------------------------------------------------------------------------------
 
 def load_coo(file):

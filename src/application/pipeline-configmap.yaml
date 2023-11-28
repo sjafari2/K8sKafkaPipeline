@@ -5,15 +5,13 @@ metadata:
 data:
   ############# KAFKA PROPERTIES #############################
   KAFKA_TOPIC_COUNT: "10"
-  #KAFKA_SERVER_URI_PRODUCER: "kafka-0.kafka-headless.kafkastreamingdata.svc.cluster.local:9092"
-  #KAFKA_SERVER_URI_CONSUMER: "kafka.kafkastreamingdata.svc.cluster.local:9092"
   KAFKA_INSTALL_PATH: "/kafka/bin/"
 
   ############# PRODUCER PROPERTIES #############################
-  PRODUCER_COUNT: "1"
+  PRODUCER_COUNT: "2"
   PRODUCER_TOPIC_COUNT: "10"
   PRODUCER_INPUT_PATH: 'request-producer-data'
-  PRODUCER_POD_COUNT: "1"
+  PRODUCER_POD_COUNT: "2"
   WAITE_TIME: "10"
   BATCH_SIZE: "100"
   TOPIC_TITLE: "ukrain"
@@ -30,20 +28,16 @@ data:
   CONSUMER_COUNT: "1"
   CONSUMER_WINDOW_COUNT: "2"
 
-  ############# REQUEST & MERGE PODS PROPERTIES ###############
-  REQUEST_COUNT: "1"
-  MERGE_COUNT: "1"
-  MERGE_WAIT_TIME: "600"
-  MERGE_WAIT_THRESHOLD: "20"
-  merge_path: "./merged-clstr-data"  
-
+  ##### APPLICATION POD VARIABLES ##########################
+  APPLICATION_WAIT_TIME: "1"
+  APPLICATION_COUNT: "1"
+ 
   ############### ZIKA VARIABLES ##############################
   ZIKA_DATA_ADDRESS: "./data/zika_data_only_hashtags.csv"
   RARELIST_DATA_ADDRESS: "./data/rarelist.pkl"
-  h5py_path: "consumer-app-data/zika"
 
   ############## PASCAL-G VARIABLES ########################
-  Column_Range: "500000"
+  Column_Range: "100000"
   Row_Range: "1000"
   APPLICATION_COUNT: "1"
   fps: "[ ]"
@@ -59,13 +53,11 @@ data:
   log_path_findCl: "./logs/pascal-g/findProbCl"
   log_path_mergeCl: "./logs/pascal-g/mergeProbFi"
   csr_matrix_path: "./data/csr_matrix"
-  Vacc_H5path: "consumer-app-data/vacc"
-  shared_H5path: "consumer-app-data/vacc/2023-06-06/17-10-24"
-  local_clstr_path: "app-merge-data"
-  Ukraine_H5path: "consumer-app-data/ukraine"
-  H5PY_PATH: "consumer-app-data/zika"
-
+  local_clstr_path: "./app-merge-data"
+  H5PY_PATH: "/app/consumer-app-data"
+  
   ##### REQUEST POD VARIABLES ########################
+  REQUEST_COUNT: "1"
   RequestURL: 'http://127.0.0.1:8000/'
   RequestInputPath: "./request-data/simulator"
   RequestOutputPath: "./request-producer-data"
@@ -75,3 +67,10 @@ data:
   Wait : '10'
   RqstPodMntPath: "request-data"
   RqstPodSharedPath: "request-producer-data"
+
+  ##### MERGE POD VARIABLES ##########################
+  MERGE_COUNT: "1"
+  merge_path: "./merged-clstr-data"
+  
+
+
