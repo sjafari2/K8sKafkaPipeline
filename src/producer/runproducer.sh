@@ -36,13 +36,13 @@ mkdir -p ${log_path}
 
 # Function to kill existing mainProducer.py processes
 kill_existing_processes() {
-    echo "Checking for existing mainProducer.py processes..."
+    #echo "Checking for existing mainProducer.py processes..."
     pgrep -f mainProducer.py > /dev/null
     if [ $? -eq 0 ]; then
         echo "Found existing mainProducer.py processes. Killing them..."
         pkill -f mainProducer.py
-    else
-        echo "No existing mainProducer.py processes found."
+    #else
+     #   echo "No existing mainProducer.py processes found."
     fi
 }
 
@@ -62,7 +62,7 @@ kill_existing_processes
     for file in "$input_path"/*-pod-"$pi"-*; do
         if [ -f "$file" ]; then
             pod_files_exist=true
-	    echo There are some files needed to be sent to the pipeline
+	    echo There are still input data coming through Kafka
             break
         fi
     done

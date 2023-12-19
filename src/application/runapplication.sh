@@ -48,7 +48,7 @@ mkdir -p "${h5py_path}processed"
 
 #       	for ((i = 0; i < ${app_count} ; i++)); do
 	 echo Running local clustering algorithm in pod $pod_index application process ${i}
-         python3 findClusters.py -pypath "${h5py_path}" -t1 "${thr1}" -t2 "${thr2}" -sim1 "${sim1}" -sim2 "${sim2}" -appindex "${i}" -fps "${fps}" -logpath "${findCl_log_path}" -localclstrpath "${localclstrpath}" #>"${output_log_path}/findcluster.out" 
+         python3 findClusters.py -pypath "${h5py_path}" -t1 "${thr1}" -t2 "${thr2}" -sim1 "${sim1}" -sim2 "${sim2}" -appindex "${i}" -fps "${fps}" -logpath "${findCl_log_path}" -localclstrpath "${localclstrpath}" >"${output_log_path}/findcluster.out" 
  
 #	pid[$i]=$!
 #       	done   

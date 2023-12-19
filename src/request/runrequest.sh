@@ -30,9 +30,9 @@ chmod -R 777 ./logs/request
 
 
 # Check if port 80 is occupied and if so, kill the process occupying it
-if lsof -Pi :80 -sTCP:LISTEN -t >/dev/null; then
-    echo "Port 80 is occupied. Killing the process..."
-    kill -9 $(lsof -t -i:80)
+if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null; then
+    echo "Port 8080 is occupied. Killing the process..."
+    kill -9 $(lsof -t -i:8080)
 fi
 
 
@@ -68,7 +68,6 @@ while true; do
         # Run request_extended.py
         python3 request_extended.py -podcount "${pod_count}" -prodcount "${prod_count}" -totalprod "${total_prod}" -ipath "${input_path}" -opath "${output_path}" -start "${start_date}" -end "${end_date}" -window "${window}" -wait "${wait_time}" >"${log_path}/simulator.out"
 
-        # Update start and end dates for the next iteration
         start_date="$end_date"
         end_date=$(add_window_to_date "$end_date")
     else

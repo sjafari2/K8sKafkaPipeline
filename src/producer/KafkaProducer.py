@@ -86,6 +86,8 @@ class Producer:
         sindex = podindex * batchsize * nprod + prodindex * batchsize
         unique_words = set()
         for filename in filenames:
+            print("################################################################")
+            print(f" File name is {filename}")
             with open(filename, 'r', encoding='utf-8') as f:
                 header = f.readline().split(',')
             itr = 0
@@ -127,15 +129,15 @@ class Producer:
                      print('----------------------------------------------------------------')
                      print("Producer is Sending Data")
                      hashTopic = dfResult.index[i]
-                     #word = helper2.get_word_from_hash(hashTopic)  # Lookup the word from the hash
+                     word = helper2.get_word_from_hash(hashTopic)  # Lookup the word from the hash
                      key = hashTopic % num_topics
                      topic = f"{topicTitle}_{key}"#, {word}"
-                     print (f" Topic is {topic}")
+                     print (f" Topic is {topic}, {word}")
                      flat_list = [item for sublist in dfResult.iloc[i] for item in sublist]
-                     dictkey= f"{key}"#, {word}"                                    #dict_keyi = str(key) + ", " + word
+                     #dictkey= f"{key}, {word}"                                    #dict_keyi = str(key) + ", " + word
                     # print(f" type word is {type(word)}")
                     # print(f" type dictkey is {type(dictkey)}")
-                    # valuedict = {dictkey: flat_list}
+                     #valuedict = {dictkey: flat_list}
                     # valuedict = str({hashTopic: dfResult.iloc[i]})
                      valuedict = str({hashTopic: flat_list})
                      print(f"ValueDict ={valuedict}")

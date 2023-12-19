@@ -7,7 +7,7 @@ selector_pods=("consumer" "consumer" "merge")
 container_names=("consumer-sts" "application-sts" "merge-sts")
 
 # Define the destination directory on the local machine
-destination="./kafka-temp/data/pickles-11-17-2023"
+destination="./data/result-11-28-2023/pickles"
 
 # Loop through the source paths and pods
 for i in "${!source_paths[@]}"; do

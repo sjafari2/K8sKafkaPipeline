@@ -10,10 +10,10 @@ data:
   KAFKA_INSTALL_PATH: "/kafka/bin/"
 
   ############# PRODUCER PROPERTIES #############################
-  PRODUCER_COUNT: "2"
+  PRODUCER_COUNT: "1"
   PRODUCER_TOPIC_COUNT: "10"
   PRODUCER_INPUT_PATH: 'request-producer-data'
-  PRODUCER_POD_COUNT: "2"
+  PRODUCER_POD_COUNT: "1"
   WAITE_TIME: "10"
   BATCH_SIZE: "100"
   TOPIC_TITLE: "ukrain"
@@ -67,7 +67,7 @@ data:
   RequestInputPath: "./request-data/simulator"
   RequestOutputPath: "./request-producer-data"
   StartDate : "2022-8-01-00"
-  EndDate : "2022-8-01-05"
+  EndDate : "2022-8-01-01"
   RequestWindow : 'hour'
   Wait : "10"
   RqstPodMntPath: "request-data"
