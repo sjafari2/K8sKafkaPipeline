@@ -5,7 +5,9 @@ import time
 from datetime import datetime
 from datetime import date, timedelta
 import sys
+from io import StringIO
 import numpy as np
+import json
 # how to run: python3 request_extended.py -start 2022-8-01-00 -end 2022-8-01-05 -window hour -wait 10
     
 
@@ -88,8 +90,18 @@ if days < 2:
         print('requesting snapshot {}'.format(date))   
 
         jsonobj = requests.get('http://127.0.0.1:8000/snapshot?date={}'.format(date))
-       # print(f"Json object is {jsonobj.json()}")
-        df = pd.read_json(jsonobj.json(), orient='split')
+        # print(f"Json object is {jsonobj.json()}")
+
+        ## Added by Soheila
+        json_str = json.dumps(jsonobj.json())
+
+        # Use StringIO to turn the JSON string into a file-like object
+        string_io_obj = StringIO(json_str)
+
+        # Now read the JSON data using pd.read_json
+        df = pd.read_json(string_io_obj, orient='split')
+        ## Untill here
+        #df = pd.read_json(jsonobj.json(), orient='split')
 
         list_df = np.array_split(df,total_producer)
         k = 0
@@ -129,10 +141,18 @@ else:
             print('requesting snapshot {}'.format(day))   
 
             jsonobj = requests.get('http://127.0.0.1:8000/snapshot?date={}'.format(day))
-
+            ### Added by Soheila
             # print(jsonobj.json())
+            json_str = json.dumps(jsonobj.json())
 
-            df = pd.read_json(jsonobj.json(), orient='split')
+            # Use StringIO to turn the JSON string into a file-like object
+            string_io_obj = StringIO(json_str)
+
+            # Now read the JSON data using pd.read_json
+            df = pd.read_json(string_io_obj, orient='split')
+
+            ### Until here
+            #df = pd.read_json(jsonobj.json(), orient='split')
             list_df = np.array_split(df,total_producer)
             k = 0
             for i in range(0,pod_count):

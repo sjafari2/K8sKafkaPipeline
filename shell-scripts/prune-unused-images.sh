@@ -1,6 +1,11 @@
 #!/bin/bash
 
-docker image prune -a --filter "until=$(date +'%Y-%m-%dT%H:%M:%S' --date='-30 days')"
-#docker image prune -a --filter "until=$(date -d '5 weeks ago' +%s)"
-docker image prune --all --force --filter "dangling=true"
-#docker system prune -a
+# Calculate the date for 30 days ago in the format Docker expects
+# For BSD systems like macOS
+thirty_days_ago=$(date -v-30d +'%Y-%m-%dT%H:%M:%S')
+
+# Prune images older than 30 days
+docker image prune -a --force --filter "until=$thirty_days_ago"
+
+# Prune all dangling images
+docker image prune --all --force

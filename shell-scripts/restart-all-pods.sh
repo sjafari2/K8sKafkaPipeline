@@ -1,17 +1,10 @@
 #!/bin/bash
 
-pods=( "merge" "producer" "consumer" "merge" )i
+pod_names=("consumer" "producer" "request" "merge")
 
-echo Copy updated pods code
-bash update-src.sh
-
-echo Copy all pods results
-bash copy-pods-result
-
-echo Delete all pods logs
-bash delete-pod-logs.sh
-
-echo Restart all pods
-for pod in "${pods[@]}"; do
-    restart-one-pod.sh $pod
+for pod_name in "${pod_names[@]}";do
+# shellcheck disable=SC1073
+ kubectl rollout restart statefulset "${pod_name}"-sts
 done
+
+kubectl get pods --watch

@@ -1,7 +1,6 @@
 import itertools
 import logging
 import pandas as pd
-import self
 from kafka import KafkaProducer
 import helper
 import helper2

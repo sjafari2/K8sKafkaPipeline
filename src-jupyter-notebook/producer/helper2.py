@@ -30,7 +30,7 @@ stop_words.extend(['rt', 'und','many','let','very','from', 'subject', 're', 'edu
                    'think', 'would', 'still', 'keep', 'may', 'could', 'come','vaccination', 'vaccine', 'vaccines', 'vaccinated'])
 
 
-with open('data/rarelist.pkl', 'rb') as f:
+with open('./data/rarelist.pkl', 'rb') as f:
     mynewlist = pickle.load(f)
     stop_words.extend(mynewlist)
 

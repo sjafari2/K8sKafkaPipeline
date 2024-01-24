@@ -1,6 +1,6 @@
-'''
+"""
 @author: Soheila
-'''
+"""
 from kafka import KafkaConsumer
 from kafka.structs import TopicPartition
 import helper
@@ -12,7 +12,7 @@ import json
 import pickle
 
 class Consumer:
-    def __init__(self,serveruri,pod_index):
+    def __init__(self, serveruri ,pod_index):
 
         #self.row_sums = []  # Initialize an empty list to store row sums
         #self.total_sum = 0  # Initialize the total sum

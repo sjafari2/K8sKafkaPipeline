@@ -24,15 +24,17 @@ data:
   group_id: "StreamData"
   max_in_flight_requests_per_connection: "1"
   enable_auto_commit: "true"
-  auto_commit_interval_ms: "1000"
+  auto_commit_interval_ms: "5000"
   enable.idempotence: "true"
-  CONSUMER_POD_COUNT: "2"
-  CONSUMER_COUNT: "2"
+  CONSUMER_POD_COUNT: "1"
+  CONSUMER_COUNT: "1"
   CONSUMER_WINDOW_COUNT: "2"
 
-  ############# REQUEST & MERGE PODS PROPERTIES ###############
-  REQUEST_COUNT: "1"
-  MERGE_COUNT: "1"
+  ##### APPLICATION POD VARIABLES ##########################
+  APPLICATION_WAIT_TIME: "60"
+  APPLICATION_COUNT: "1"
+
+
 
   ############### ZIKA VARIABLES ##############################
   ZIKA_DATA_ADDRESS: "./data/zika_data_only_hashtags.csv"
@@ -41,13 +43,12 @@ data:
 
   ############## PASCAL-G VARIABLES ########################
   Column_Range: "500000"
-  Row_Range: "1000"
-  APPLICATION_COUNT: "1"
+  Row_Range: "500000"
   fps: "[ ]"
   sim1: "dotsim"
   sim2: "dotsim"
   thr1: "0.3"
-  thr2: "0.3"
+  thr2: "0.6"
   outliers_action: "remove"
   thmls: "[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]"
   thcls: "[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]"
@@ -58,17 +59,25 @@ data:
   csr_matrix_path: "./data/csr_matrix"
   Vacc_H5path: "consumer-app-data/vacc"
   shared_H5path: "consumer-app-data/vacc/2023-06-06/17-10-24"
-  local_clstr_path: "app-merge-data"
-  Ukraine_H5path: "consumer-app-data/ukraine"
-  H5PY_PATH: "consumer-app-data/zika"
+  local_clstr_path: "./app-merge-data"
+  Ukraine_H5path: "./consumer-app-data/ukraine"
+  H5PY_PATH: "./consumer-app-data"
 
   ##### REQUEST POD VARIABLES ########################
+  REQUEST_COUNT: "1"
   RequestURL: 'http://127.0.0.1:8000/'
   RequestInputPath: "./request-data/simulator"
   RequestOutputPath: "./request-producer-data"
-  StartDate : "2022-8-01-00"
-  EndDate : "2022-8-01-01"
+  StartDate : '2022-8-01-00'
+  EndDate : '2022-8-01-01'
   RequestWindow : 'hour'
-  Wait : "10"
+  Wait : '10'
   RqstPodMntPath: "request-data"
   RqstPodSharedPath: "request-producer-data"
+
+  ############# MERGE PODS VARIABLES ###############
+
+  MERGE_COUNT: "1"
+  MERGE_WAIT_TIME: "600"
+  MERGE_WAIT_THRESHOLD: "20"
+  merge_path: "./merged-clstr-data"
