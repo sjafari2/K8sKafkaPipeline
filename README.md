@@ -4,8 +4,8 @@ Eech stage passes the result to the next statge. The Application and Merge stage
 
 ## Insatllation
 For ruuning pipeline correctly, you need to first install these packages:
-- Kafka-python 2.0.2
 - Python 3.7.16
+- Kafka-python 2.0.2
 - Kubernetes  v1.28.3
 - Docker 0.19.0
   
