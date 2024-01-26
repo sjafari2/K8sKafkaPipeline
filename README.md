@@ -45,7 +45,10 @@ All the other required packages would be installed by developing the docker imag
 
 
 ## Running Pipeline
-For running the whole pipeline, we need to run the .sh files mentioned below in order:
+For running the whole pipeline, you need to run the runPipeline.sh file in shell-scripts directory by this command:
+./shell-scripts/runPipeline.sh
+
+runPipeline.sh included these stages:
 
 #### Creating Docker Images 
 - ./shell-scripts/docker-all-pods.sh
