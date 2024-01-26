@@ -47,25 +47,25 @@ All the other required packages would be installed by developing the docker imag
 ## Running Pipeline
 For running the whole pipeline, we need to run the .sh files mentioned below in order:
 
-### Creating Docker Images 
+#### Creating Docker Images 
 - ./shell-scripts/docker-all-pods.sh
 
-### Deploying Kafka-Python 
+#### Deploying Kafka-Python 
 We deploy Kafka Bitnami Helm Chart for installing Kafak-Python. In the latest published version, Kafka does not need Zookeepr. 
 - ./shell-scripts/docker-all-pods.sh
 - ./shell-scripts/helm-install.sh
   
-### Deploying Pods 
+#### Deploying Pods 
 - ./shell-scripts/deploy-all-pods.sh
   
-### Running Pods  
+#### Running Pods  
 - ./shell-scripts/run-all-pods.sh
 
-### The Results
+### Results
 
 The final result would be in the last pod, Merge Pod in path ./request-data.
 
-# Contributaions
+### Contributaions
 Dr. Patrick Bridges, University of New Mexico
 Dr. Trilce Estrada, University of New Mexico
 Soheila Jafari Khouzani, University of New Mexico
