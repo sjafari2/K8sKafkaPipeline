@@ -46,23 +46,23 @@ All the other required packages would be installed by developing the docker imag
 
 ## Running Pipeline
 For running the whole pipeline, you need to run the runPipeline.sh file in shell-scripts directory by this command:
-./shell-scripts/runPipeline.sh
+#### ./shell-scripts/runPipeline.sh
 
 runPipeline.sh included these stages:
 
-#### Creating Docker Images 
+##### Creating Docker Images 
 - ./shell-scripts/docker-all-pods.sh
 
-#### Deploying Kafka-Python 
+##### Deploying Kafka-Python 
 We deploy Kafka Bitnami Helm Chart for installing Kafak-Python. In the latest published version, Kafka does not need Zookeepr. 
 - ./shell-scripts/docker-all-pods.sh
 - ./shell-scripts/helm-install.sh
   
-#### Deploying Pods 
-- ./shell-scripts/deploy-all-pods.sh
+##### Deploying Pods 
+- ./shell-scripts/deploy-sts.sh
   
-#### Running Pods  
-- ./shell-scripts/run-all-pods.sh
+##### Running Pods  
+- ./shell-scripts/run-all-pods-scripts.sh
 
 ### Results
 
