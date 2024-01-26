@@ -22,6 +22,9 @@ spec:
       containers:
         - name: "request-container"
           image: sjafari2/kafkarequest:latest
+          securityContext:
+            runAsUser: 1000  # UID for sjafari
+            runAsGroup: 1000 # GID for sjafari
           env:
             - name: POD_ORDINAL
               valueFrom:
@@ -38,13 +41,12 @@ spec:
                   name: pipeline-configmap
                   key: RqstPodSharedPath
           command: ["/bin/bash", "-c"]
+        #   chmod -R 755 ./${RqstPodSharedPath}   echo ${RqstPodSharedPath}
           args:
             - |
-              echo ${RqstPodSharedPath}
-              #chmod -R 777 ./${RqstPodSharedPath}  
               rm -rf ./${RqstPodSharedPath}/*
-              chmod +x runrequest.sh
-              #./runrequest.sh 
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
               sleep infinity
           ports:
           - containerPort: 9092
@@ -53,11 +55,11 @@ spec:
             name: "exporter-port"
           resources:
             requests:
-              memory: "50Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
             limits:
-              memory: "50Gi"
-              cpu: "2"
+              memory: "5Gi"
+              cpu: "1"
           volumeMounts:
           - mountPath: app/request-data
             name: request-data

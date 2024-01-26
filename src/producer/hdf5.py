@@ -1,4 +1,5 @@
 import h5py
+from pandas.core import sparse
 
 
 def csr2h5py(csr_matrixg, filename, extension):

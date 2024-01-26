@@ -17,10 +17,16 @@ execute_script_in_pod() {
   local pod_name="$1"
   local container_name="$2"
   local script="$3"
+  local pod_index="$4"
+
   # Kill existing processes with the same script name
   kubectl exec "$pod_name" -c "$container_name" -- pkill -f "$script"
+
   # Execute the script in the pod
-  kubectl exec "$pod_name" -c "$container_name" -- "$script"
+  if [ "$container_name" != "request-container" ]; then
+    script="$script $pod_index"
+  fi
+  kubectl exec "$pod_name" -c "$container_name" -- $script
 }
 
 # Define the order of scripts and their labels/containers
@@ -29,24 +35,21 @@ script_order=("./runrequest.sh" "./runproducer.sh" "./runconsumer.sh" "./runappl
 # Check if the input is "all" or a list of pod names
 if [ "$1" == "all" ]; then
   # Execute scripts in all pods
-  pod_labels=("app=request-sts" "app=producer-sts" "app=consumer-sts" "app=consumer-sts" "app=merge-sts")
-  containers=("request-sts" "producer-sts" "consumer-sts" "application-sts" "merge-sts")
+  pod_labels=("app=request-sts" "app=producer-sts" "app=consumer-sts" "app=application-sts" "app=merge-sts")
+  containers=("request-container" "producer-container" "consumer-container" "application-container" "merge-container")
 
   for ((i = 0; i < ${#script_order[@]}; i++)); do
     script="${script_order[i]}"
     label="${pod_labels[i]}"
     container="${containers[i]}"
-    
-    pod_names=($(kubectl get pods --selector="$label" -o json | jq -r '.items[].metadata.name'))
-    n=0
-    while [ ${#pod_names[@]} -gt 0 ]; do
-      for pod_name in "${pod_names[@]}"; do
-        wait_for_pod_running "$pod_name"
-        execute_script_in_pod "$pod_name" "$container" "$script $n"
-      done
-      n=$((n + 1))
-      pod_names=($(kubectl get pods --selector="$label" -o json | jq -r '.items[].metadata.name'))
-      sleep 1
+
+    pod_names=($(kubectl get pods --selector="$label" -o jsonpath="{.items[?(@.metadata.name ends with '-sts')].metadata.name}"))
+    echo "${pod_names[@]}"
+
+    for pod_name in "${pod_names[@]}"; do
+      pod_index=$(echo "$pod_name" | grep -oP 'sts-\K\d+')
+      wait_for_pod_running "$pod_name"
+      execute_script_in_pod "$pod_name" "$container" "$script" "$pod_index"
     done
   done
 else
@@ -54,8 +57,9 @@ else
   for pod_name in "$@"; do
     for script in "${script_order[@]}"; do
       wait_for_pod_running "$pod_name"
-      execute_script_in_pod "$pod_name" "$pod_name" "$script 0"
+      pod_index=$(echo "$pod_name" | grep -oP 'sts-\K\d+')
+      execute_script_in_pod "$pod_name" "$pod_name" "$script" "$pod_index"
+      echo Running pod "$pod_name" is done
     done
   done
 fi
-

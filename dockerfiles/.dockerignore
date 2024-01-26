@@ -3,6 +3,5 @@
 config
 log[s]
 logproducers
-data/
 README.md
 docs

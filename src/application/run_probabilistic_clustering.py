@@ -23,8 +23,8 @@ network = args.n
 t1 = args.t1
 t2 = args.t2
 
-sim1=args.sim1
-sim2=args.sim2
+sim1 = args.sim1
+sim2 = args.sim2
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUT AND OUTPUT PATHS

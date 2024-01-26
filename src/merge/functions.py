@@ -2,8 +2,6 @@ import networkx as nx
 import h5py
 from scipy import sparse
 from scipy.sparse import coo_matrix, csr_matrix, vstack, spmatrix
-from os import listdir
-from os.path import isfile, join
 import numpy as np
 from os import listdir
 from os.path import isfile, join

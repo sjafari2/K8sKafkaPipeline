@@ -1,5 +1,5 @@
-from  find_probabilistic_clusters import *
-from  functions import *
+from find_probabilistic_clusters import *
+from functions import *
 import argparse
 import sys
 from os import listdir

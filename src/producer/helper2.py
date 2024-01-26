@@ -22,7 +22,7 @@ from preprocess import *
 nlp = spacy.load("en_core_web_sm")
 nltk.download('stopwords')
 nlp = spacy.load("en_core_web_sm")
-
+# python -m spacy download en_core_web_sm
 # constants
 stop_words = list(set(stopwords.words('english')))+list(set(stopwords.words('spanish')))+list(set(stopwords.words('portuguese')))
 stop_words.extend(['rt', 'und','many','let','very','from', 'subject', 're', 'edu', 'whole','really',

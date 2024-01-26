@@ -4,7 +4,7 @@
 namespace="kafkastreamingdata"
 source_paths=("app/consumer-app-data" "app/app-merge-data" "app/merged-clstr-data")
 selector_pods=("consumer" "consumer" "merge")
-container_names=("consumer-sts" "application-sts" "merge-sts")
+container_names=("consumer-container" "application-sts" "merge-sts")
 
 # Define the destination directory on the local machine
 destination="./data/result-11-28-2023/pickles"

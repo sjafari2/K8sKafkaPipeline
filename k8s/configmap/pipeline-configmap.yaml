@@ -62,7 +62,7 @@ data:
   EndDate : '2022-8-01-05'
   RequestWindow : 'hour'
   Wait : '10'
-  RqstPodMntPath: "request-data"
+  RqstPodMntPath: "requested-data"
   RqstPodSharedPath: "request-producer-data"
 
   ##### MERGE POD VARIABLES ##########################

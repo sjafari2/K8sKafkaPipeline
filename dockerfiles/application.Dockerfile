@@ -1,7 +1,12 @@
-# Use the python alpine base container, it's very light weight.
-FROM python:slim-bullseye
-RUN apt update \
-    && apt install -y \
+
+FROM python:3.7-slim-bullseye
+
+# Set work directory and copy only the necessary files for requirements installation
+WORKDIR /install
+COPY dockerfiles/requirements.txt .
+
+# Combine installation commands and clean-up in one layer to minimize layering
+RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
     openjdk-17-jdk \
@@ -10,37 +15,43 @@ RUN apt update \
     mpich \
     bash \
     wget \
-    uuid-runtime \
     pkg-config \
     libhdf5-dev \
     nano \
     vim \
     screen \
     procps \
-    libpcap-dev
-WORKDIR /kafka
-RUN wget -O - https://downloads.apache.org/kafka/3.4.1/kafka_2.13-3.4.1.tgz | tar xzf - -C /kafka --strip-components=1
-
-WORKDIR /install
-COPY dockerfiles/requirements.txt .
-# Install any dependencies you need
-RUN pip install --upgrade setuptools wheel \
-    && pip install -r requirements.txt \
-    && pip install mpi4py
-RUN python -m spacy download en_core_web_sm \
+    libpcap-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt mpi4py jupyterlab \
+    && python -m spacy download en_core_web_sm \
     && python -m nltk.downloader stopwords
 
-# Where your code will be located on the container
+# Create user and group
+RUN groupadd -g 1000 sjafari && \
+    useradd -m -u 1000 -g sjafari -s /bin/bash sjafari
+
+# Set Kafka work directory, download and extract Kafka, and change ownership
+WORKDIR /kafka
+RUN wget -O - https://downloads.apache.org/kafka/3.4.1/kafka_2.13-3.4.1.tgz | tar xzf - -C /kafka --strip-components=1 \
+    && chown -R sjafari:sjafari /kafka /install
+
+# Set the work directory for the application
 WORKDIR /app
-ENV IS_CONTAINERIZED True
+COPY ./src/application .
+COPY ./src/run-jupyterlab.sh .
+COPY ./dockerfiles/pipeline-configmap.yaml .
+
+# Change the owner of all files under /app and /install to sjafari and give necessary permissions
+RUN chown -R sjafari:sjafari /app \
+    && chmod 755 runapplication.sh
+
+# Environment variables
 ENV KAFKA_INSTALL_PATH /kafka/bin/
 
-# Copy all files from the directory where the dockerfile is located except anything added to a .dockerignore file
-# You can also specify files you want moved vs files you do not want moved and their destination directories
-COPY  ./src/application .
-COPY ./src/pipeline-configmap.yaml .
+# Switch to non-root user
+USER sjafari
 
-# Do any compilation or other things you need to do here with RUN and ENV commands
-# Run the application as a list of arguments
-#CMD ["bash", "./examplerun.sh"]
+# Command to run
 CMD ["bash", "sleep infinity"]

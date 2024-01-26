@@ -22,6 +22,9 @@ spec:
       containers:
         - name: "producer-container"
           image: sjafari2/kafkaproducer:latest
+          securityContext:
+            runAsUser: 1000  # UID for sjafari
+            runAsGroup: 1000 # GID for sjafari
           env:
           - name: POD_ORDINAL
             valueFrom:
@@ -39,21 +42,21 @@ spec:
               pod_name=$(hostname)
               ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
               echo "Pod ordinal value is: $ordinal"
-              chmod +x runproducer.sh
-              #./runproducer.sh $ordinal 
               sleep infinity
           ports:
           - containerPort: 9092
             name: producer-port
           - containerPort: 9093
             name: exporter-port
+          - containerPort: 8888
+            name: notebook-port
           resources:
             requests:
-              memory: "5Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
             limits:
-              memory: "5Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
           volumeMounts:
           - mountPath: app/producer-data
             name: producer-data

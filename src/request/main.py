@@ -3,8 +3,7 @@ import pandas as pd
 from json import loads, dumps
 import time
 import yaml
-from os import listdir
-from os.path import isfile, join
+
 
 with open('./pipeline-configmap.yaml', 'r') as file:
     yamlfile = yaml.safe_load(file)

@@ -1,6 +1,5 @@
 import h5py
 from scipy import sparse
-from scipy.sparse import csr_matrix 
 from os import listdir
 from os.path import isfile, join
 

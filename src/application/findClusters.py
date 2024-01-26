@@ -1,12 +1,11 @@
-from  find_probabilistic_clusters import *
-from  functions import *
+from find_probabilistic_clusters import *
+from functions import *
 import argparse
 import sys
 import pickle
 from os import listdir
 from os.path import isfile, join
 import helper
-import time
 from datetime import datetime
 
 if __name__ == '__main__':

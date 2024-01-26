@@ -1,4 +1,4 @@
-Name:         my-pipeline-kafka-controller-configuration
+Name:         pipe-kafka-controller-configuration
 Namespace:    kafkastreamingdata
 Labels:       app.kubernetes.io/component=controller-eligible
               app.kubernetes.io/instance=my-pipeline

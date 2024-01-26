@@ -22,6 +22,9 @@ spec:
       containers:
         - name: "consumer-container"
           image: sjafari2/kafkaconsumer:latest
+          securityContext:
+            runAsUser: 1000  # UID for sjafari
+            runAsGroup: 1000 # GID for sjafari
           env:
           - name: POD_ORDINAL
             valueFrom:
@@ -34,7 +37,6 @@ spec:
               pod_name=$(hostname)
               ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
               echo "Pod ordinal value is: $ordinal"
-              chmod +x runconsumer.sh  
               sleep infinity
           ports:
           - containerPort: 9092
@@ -43,10 +45,10 @@ spec:
             name: "exporter-port"
           resources:
             requests:
-              memory: "10Gi"
+              memory: "1Gi"
               cpu: "2"
             limits:
-              memory: "10Gi"
+              memory: "1Gi"
               cpu: "2"
           volumeMounts:
           - mountPath: app/consumer-app-data
@@ -54,6 +56,9 @@ spec:
            #      restartPolicy: OnFailure
         - name: "application-container"
           image: sjafari2/kafkaapplication:latest
+          securityContext:
+            runAsUser: 1000  # UID for sjafari
+            runAsGroup: 1000 # GID for sjafari
           ports:
           - containerPort: 9094
             name: "app-port"
@@ -65,16 +70,14 @@ spec:
               pod_name=$(hostname)
               ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
               echo "Pod ordinal value is: $ordinal"
-              chmod +x *.sh
-              chmod +x *.py
               sleep infinity
           resources:
             requests:
-              memory: "10Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
             limits:
-              memory: "10Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
           volumeMounts:
           - mountPath: app/consumer-app-data
             name: consumer-app-data

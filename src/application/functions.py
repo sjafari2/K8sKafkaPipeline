@@ -1,16 +1,13 @@
 import networkx as nx
 import h5py
 from scipy import sparse
-from scipy.sparse import coo_matrix, csr_matrix, vstack, spmatrix
-from os import listdir
-from os.path import isfile, join
+from scipy.sparse import vstack
 import numpy as np
 from os import listdir
 from os.path import isfile, join
 import pickle
 from helper import *
-import os
-import logging
+
 
 def buildGraph(edge_list_path, network):
     '''

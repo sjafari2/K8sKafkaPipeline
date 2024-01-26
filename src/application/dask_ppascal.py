@@ -1,7 +1,6 @@
 import time
 from collections import defaultdict
 import dask.array as da
-import dask
 from dask.distributed import Client
 from functions import *
 

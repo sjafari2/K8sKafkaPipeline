@@ -5,8 +5,8 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-administrator
+  name: cluster-admin
 subjects:
 - kind: ServiceAccount
   name: admin-sa
-  namespace: kafka-pipeline
+

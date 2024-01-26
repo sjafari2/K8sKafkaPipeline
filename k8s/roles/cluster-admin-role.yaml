@@ -3,7 +3,6 @@ kind: ClusterRole
 metadata:
   # "name" is the name of the ClusterRole
   name: cluster-admin
-  namespace: kafka-pipeline
 rules:
 - apiGroups: ["*"]
   resources: ["*"]

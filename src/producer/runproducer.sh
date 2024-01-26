@@ -16,7 +16,7 @@ col_range=${data_Column_Range}
 pod_index=$1
 
 chmod +x get_kafka_producer_dns.sh
-server_uri=$(bash get_kafka_producer_dns.sh)
+server_uri=$(bash ./get_kafka_producer_dns.sh)
 #echo $server_uri
 
 ((np = nproducers))

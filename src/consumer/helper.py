@@ -1,8 +1,6 @@
-from faker import Faker
 import csv, os, json
 import time as timer
 import hdf5
-import math
 from datetime import datetime
 from scipy.sparse import csr_matrix
 import pickle

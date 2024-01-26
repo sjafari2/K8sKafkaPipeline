@@ -6,11 +6,11 @@ metadata:
     #    io.kompose.service: producer-data
   name: merged-clstr-data
 spec:
-  storageClassName: rook-cephfs-central
+  #storageClassName: rook-cephfs-central
   accessModes:
     - ReadWriteMany
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   hostPath:
     path: "app/merged-clstr-data"
 status: {}
@@ -25,10 +25,10 @@ metadata:
   name: merged-clstr-data
   namespace: "kafkastreamingdata"
 spec:
-  storageClassName: rook-cephfs-central
+  #storageClassName: rook-cephfs-central
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 status: {}

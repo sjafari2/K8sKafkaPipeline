@@ -7,9 +7,6 @@ import helper
 import logging
 import numpy as np
 import time
-import itertools
-import json
-import pickle
 
 class Consumer:
     def __init__(self, serveruri ,pod_index):

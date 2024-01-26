@@ -1,4 +1,3 @@
-from faker import Faker
 import csv, os, json
 import time as timer
 import hdf5

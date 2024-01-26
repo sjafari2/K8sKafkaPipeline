@@ -30,10 +30,10 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
+              rm -rf ./logs/*
               pod_name=$(hostname)
               ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
               echo "Pod ordinal value is: $ordinal"
-              chmod +x runmerge.sh 
               sleep infinity
           ports:
           - containerPort: 9092
@@ -42,11 +42,11 @@ spec:
             name: "exporter-port"
           resources:
             requests:
-              memory: "5Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
             limits:
-              memory: "5Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: "1"
           volumeMounts:
           - mountPath: app/app-merge-data
             name: app-merge-data

@@ -4,9 +4,6 @@ import plotly.graph_objs as go
 import numpy as np
 from collections import Counter
 
-
-
-
 def buildGraph(edge_list_path, network):
     '''
     Create nx graph from edge list

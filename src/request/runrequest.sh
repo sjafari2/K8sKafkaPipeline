@@ -16,6 +16,7 @@ prod_count=${data_PRODUCER_COUNT}
 total_prod=$((pod_count * prod_count)) 
 #pod_index=$1
 #prod_index=$2
+echo start date is $start_date
 
 
 CURRENT_DATE=$(TZ=America/Denver date +"%Y-%m-%d")
@@ -30,14 +31,29 @@ chmod -R 777 ./logs/request
 
 
 # Check if port 80 is occupied and if so, kill the process occupying it
-if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null; then
-    echo "Port 8080 is occupied. Killing the process..."
-    kill -9 $(lsof -t -i:8080)
-fi
+#!/bin/bash
+
+# Function to check and kill process on a specified port
+check_and_kill_port() {
+    local port=$1
+    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null; then
+        echo "Port $port is occupied. Trying to kill the process..."
+        local process_to_kill=$(lsof -t -i:$port)
+        echo "Killing process with PID: $process_to_kill"
+        kill -9 $process_to_kill
+        sleep 2  # Wait for 2 seconds to ensure the port is released
+    else
+        echo "Port $port is free."
+    fi
+}
+
+# Check and kill processes on ports 8080 and 8001
+check_and_kill_port 8080
+check_and_kill_port 8000
 
 
-echo Running API Server and Request Script to Call Pascal-G Simulator 
 
+echo Running API Server and Request Script to Call Pascal-G Simulator
 uvicorn main:app --reload &
 sleep 5
 
@@ -47,7 +63,11 @@ python3 request-notification.py &
 first_iteration=true
 
 add_window_to_date() {
-    date -d "$1 + $window hours" +"%Y-%m-%d %H:%M:%S"
+   # in linux
+   # date -d "$1 + $window hours" +"%Y-%m-%d %H:%M:%S"
+    # in mac
+    date -j -v+"$window"H -f "%Y-%m-%d %H:%M:%S" "$1" +"%Y-%m-%d %H:%M:%S"
+
 }
 
 while true; do

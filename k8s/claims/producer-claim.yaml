@@ -3,11 +3,11 @@ kind: PersistentVolume
 metadata:
   name: producer-data
 spec:
-  storageClassName: rook-cephfs-central
+  #storageClassName: rook-cephfs-central
   accessModes:
     - ReadWriteMany
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   hostPath:
     path: "app/producer-data"
 status: {}
@@ -19,10 +19,10 @@ metadata:
   name: producer-data
   namespace: "kafkastreamingdata"
 spec:
-  storageClassName: rook-cephfs-central
+  #storageClassName: rook-cephfs-central
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 status: {}

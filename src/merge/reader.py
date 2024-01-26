@@ -1,6 +1,5 @@
 import pandas as pd
 import csv
-#from mpi4py import MPI
 import os.path
 import numpy as np
 import h5py

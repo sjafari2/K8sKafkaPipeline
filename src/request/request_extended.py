@@ -7,20 +7,19 @@ from datetime import date, timedelta
 import sys
 from io import StringIO
 import numpy as np
-import json
 # how to run: python3 request_extended.py -start 2022-8-01-00 -end 2022-8-01-05 -window hour -wait 10
     
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-podcount',type = int , required=True)
-parser.add_argument('-prodcount',type = int, required=True)
-parser.add_argument('-totalprod', type = int, required=True)
+parser.add_argument('-podcount', type=int, required=True)
+parser.add_argument('-prodcount', type=int, required=True)
+parser.add_argument('-totalprod', type=int, required=True)
 parser.add_argument('-ipath', required=True)
 parser.add_argument('-opath', required=True)
 parser.add_argument('-start', required=True) 
 parser.add_argument('-end', required=True)
 parser.add_argument('-window', required=True)
-parser.add_argument('-wait', type = int, required=True)
+parser.add_argument('-wait', type=int, required=True)
 
 args = parser.parse_args()
 pod_count = args.podcount
@@ -50,19 +49,17 @@ print('start_time: {}'.format(start_time))
 print('end_time: {}'.format(end_time)) 
 
 # convert time string to datetime
-t1 = datetime.strptime(start_time, "%Y:%M:%d:%H")
+t1 = datetime.strptime(start_time, "%Y:%m:%d:%H")
 # print('Start time:', t1.time())
 
-t2 = datetime.strptime(end_time, "%Y:%M:%d:%H")
+t2 = datetime.strptime(end_time, "%Y:%m:%d:%H")
 # print('End time:', t2.time())
 
 # get difference
 delta = t2 - t1
-
 # get difference in hours
 sec = delta.total_seconds()
 hours = int(sec / (60 * 60))
-
 days = delta.days
 
 # -------------------------------------------------------------------
@@ -79,34 +76,35 @@ if days < 2:
         # print('processing {} day snapshots \n'.format(days))
         num_snapshots = days
 
-    for snapsot in range (0, num_snapshots):
+    for snapshot in range(0, num_snapshots):
 
-        if snapsot < 10:
+        if snapshot < 10:
             date = '-'.join(start_time.split(':')[0:-1])
-            date = date + '-0{}'.format(snapsot)
+            date = date + '-0{}'.format(snapshot)
         else:
-            date = date + '-{}'.format(snapsot)
+            date = date + '-{}'.format(snapshot)
 
         print('requesting snapshot {}'.format(date))   
 
         jsonobj = requests.get('http://127.0.0.1:8000/snapshot?date={}'.format(date))
         # print(f"Json object is {jsonobj.json()}")
 
-        ## Added by Soheila
-        json_str = json.dumps(jsonobj.json())
+        #json_response = jsonobj.json()
+        #print(json_response)
 
+        # Added by Soheila
+        #json_str = json.dumps(jsonobj.json())
         # Use StringIO to turn the JSON string into a file-like object
-        string_io_obj = StringIO(json_str)
+        #string_io_obj = StringIO(json_str)
 
         # Now read the JSON data using pd.read_json
-        df = pd.read_json(string_io_obj, orient='split')
-        ## Untill here
-        #df = pd.read_json(jsonobj.json(), orient='split')
+        df = pd.read_json(jsonobj.json(), orient='split')
+        # Until here
 
-        list_df = np.array_split(df,total_producer)
+        list_df = np.array_split(df, total_producer)
         k = 0
-        for i in range(0,pod_count):
-            for j in range(0,prod_count):
+        for i in range(0, pod_count):
+            for j in range(0, prod_count):
                 list_df[k].to_csv(f"{output_path}/{date}-pod-{i}-prod-{j}.csv", index=False)
                 k = k+1
 
@@ -123,46 +121,23 @@ if days < 2:
 # more than 1 day is being requested
 # can only request complete days (from 00 to 00)
 else:
-    days = []
-    for i in range(delta.days + 1):
-        day = str(start_date + timedelta(days=i))
-        days.append(day)
-    
-    for day in days:
-        
-        for snapsot in range (0, num_snapshots):
+    days_list = [start_time + timedelta(days=i) for i in range(delta.days+1)]
+    for day in days_list:
+        # Format the day for a complete day's request (00:00)
+        day_str = day.strftime("%Y-%m-%d-00")
 
-            if snapsot < 10:
-                day = '-'.join(day.split(':')[0:-1])
-                day = day + '-0{}'.format(snapsot)
-            else:
-                day = day
+        print(f'Requesting snapshot for {day_str}')
+        jsonobj = requests.get(f'http://127.0.0.1:8000/snapshot?date={day_str}')
+        df = pd.read_json(jsonobj.json(), orient='split')
+        list_df = np.array_split(df, total_producer)
+        k = 0
+        for i in range(0, pod_count):
+            for j in range(0, prod_count):
+                list_df[k].to_csv(f"{output_path}/{day_str}-pod-{i}-prod-{j}.csv", index=False)
+                k += 1
 
-            print('requesting snapshot {}'.format(day))   
+        print(f'{day_str} snapshot received and saved as csv file')
+        print(f'Sleeping for {wait} seconds')
+        time.sleep(wait)
 
-            jsonobj = requests.get('http://127.0.0.1:8000/snapshot?date={}'.format(day))
-            ### Added by Soheila
-            # print(jsonobj.json())
-            json_str = json.dumps(jsonobj.json())
-
-            # Use StringIO to turn the JSON string into a file-like object
-            string_io_obj = StringIO(json_str)
-
-            # Now read the JSON data using pd.read_json
-            df = pd.read_json(string_io_obj, orient='split')
-
-            ### Until here
-            #df = pd.read_json(jsonobj.json(), orient='split')
-            list_df = np.array_split(df,total_producer)
-            k = 0
-            for i in range(0,pod_count):
-                for j in range(0,prod_count):
-                    list_df[k].to_csv(f"{output_path}/{date}-pod-{i}-prod-{j}.csv", index=False)
-                    k = k+1
-
-
-            print('{} snapshot received and saved as csv file'.format(day))
-            print('sleeping for {} seconds'.format(wait))
-            time.sleep(wait)
-
-            print('sleeping is over, continue to next snapshot \n')
+        print('Moving on to the next snapshot\n')
