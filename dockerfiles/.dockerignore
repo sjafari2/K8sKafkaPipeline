@@ -1,0 +1,7 @@
+*.pickle
+*.log
+config
+log[s]
+logproducers
+README.md
+docs

@@ -1,0 +1,61 @@
+## Kafka configuration
+extraInitContainers: |
+  - name: create-ssl-properties
+    image: busybox
+    command:
+      - '/bin/sh'
+      - '-c'
+      - |
+        echo "ssl.truststore.password=$(cat /secrets/truststore-password)" >> /opt/bitnami/kafka/config/ssl-passwords.properties
+        echo "ssl.keystore.password=$(cat /secrets/keystore-password)" >> /opt/bitnami/kafka/config/ssl-passwords.properties
+    volumeMounts:
+      - name: secrets
+        mountPath: "/secrets"
+      - name: config
+        mountPath: "/opt/bitnami/kafka/config"
+config:
+  ## Define listeners
+  listeners: 
+    "CLIENT://:9092,INTERNAL://:9094,CONTROLLER://:9093"
+  advertised.listeners:
+    "CLIENT://my-pipeline-kafka-service.kafkastreamingdata.svc.cluster.local:9092,INTERNAL://my-pipeline-kafka-service.kafkastreamingdata.svc.cluster.local:9094"
+  listener.security.protocol.map:
+    "CLIENT:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT"
+  ## Define KRaft process roles
+  process.roles: 
+    "controller,broker"
+  controller.listener.names: 
+    "CONTROLLER"
+  controller.quorum.voters: 
+    "0@my-pipeline-kafka-controller-0.my-pipeline-kafka-controller-headless.kafkastreamingdata.svc.cluster.local:9093,1@my-pipeline-kafka-controller-1.my-pipeline-kafka-controller-headless.kafkastreamingdata.svc.cluster.local:9093,2@my-pipeline-kafka-controller-2.my-pipeline-kafka-controller-headless.kafkastreamingdata.svc.cluster.local:9093"
+  ## SASL settings
+  sasl.enabled.mechanisms:
+    "PLAIN,SCRAM-SHA-256,SCRAM-SHA-512"
+  inter.broker.listener.name: 
+    "INTERNAL"
+  sasl.mechanism.inter.broker.protocol: 
+    "PLAIN"
+  ## SASL JAAS configuration for user1 to use SCRAM-SHA-256
+  listener.name.client.scram-sha-256.sasl.jaas.config: 
+    "org.apache.kafka.common.security.scram.ScramLoginModule required username='user1' password='NDNPWU9HQ0xDaw==';"
+  ssl.truststore.location: "/opt/bitnami/kafka/secrets/truststore.jks"
+  ssl.truststore.password: "$(cat /opt/bitnami/kafka/config/ssl-passwords.properties | grep 'ssl.truststore.password' | cut -d'=' -f2)"
+  ssl.keystore.location: "/opt/bitnami/kafka/secrets/keystore.jks"
+  ssl.keystore.password: "$(cat /opt/bitnami/kafka/config/ssl-passwords.properties | grep 'ssl.keystore.password' | cut -d'=' -f2)"
+
+## Additional users & their credentials
+## For this example, just user1 is included. You can add more if necessary.
+users:
+  - name: "user1"
+    password: "$(kubectl get secret my-pipeline-kafka-user-passwords --namespace kafkastreamingdata -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1)"
+    saslType: "scram-sha-256"
+
+extraVolumes:
+  - name: secrets
+    secret:
+      secretName: kafka-ssl-secret 
+
+extraVolumeMounts:
+  - name: secrets
+    mountPath: "/opt/bitnami/kafka/secrets/"  
+    readOnly: true

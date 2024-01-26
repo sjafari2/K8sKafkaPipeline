@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  labels:
+    app: kafdrop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-pipeline-kafka  #name of deployed kafka service
+  template:
+    metadata:
+      labels:
+        app: my-pipeline-kafka  #name of deployed kafka service
+    spec:
+      containers:
+      - name: kafdrop
+        image: obsidiandynamics/kafdrop:latest
+        ports:
+        - containerPort: 9000
+        env:
+        - name: KAFKA_BROKERCONNECT
+        value: "my-pipeline-kafka :9092" #name of deployed kafka service
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop
+  labels:
+  name: kafdrop
+spec:
+  ports:
+  - port: 9000
+  targetPort: 9000
+  name: kafdrop
+  protocol: TCP
+selector:
+  app: my-pipeline-kafka  #name of deployed kafka service
+type: LoadBalancer
+

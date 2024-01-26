@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-manager-binding
+  namespace: kafkastreamingdata
+subjects:
+- kind: ServiceAccount
+  name: pod-manager-sa
+  namespace: kafkastreamingdata
+roleRef:
+  kind: Role
+  name: pod-manager-role
+  apiGroup: rbac.authorization.k8s.io
+

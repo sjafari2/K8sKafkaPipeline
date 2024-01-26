@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "producer-sts"
+  namespace: kafkastreamingdata
+  labels:
+    app: "producer-sts"
+    serviceSelector: "producer-sts"
+spec:
+  selector:
+    matchLabels:
+      app: "producer-sts"
+  serviceName: "producer-sts-svc"
+  replicas: 1
+  podManagementPolicy: Parallel
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: "producer-sts"
+    spec:
+      containers:
+        - name: "producer-container"
+          image: sjafari2/kafkaproducer:latest
+          securityContext:
+            runAsUser: 1000  # UID for sjafari
+            runAsGroup: 1000 # GID for sjafari
+          env:
+          - name: POD_ORDINAL
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: RqstPodSharedPath
+            valueFrom:
+              configMapKeyRef:
+                name: pipeline-configmap
+                key: RqstPodSharedPath
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              rm -rf ./logs/*
+              pod_name=$(hostname)
+              ordinal=$(echo "$pod_name" | rev | cut -d '-' -f 1 | rev)
+              echo "Pod ordinal value is: $ordinal"
+              sleep infinity
+          ports:
+          - containerPort: 9092
+            name: producer-port
+          - containerPort: 9093
+            name: exporter-port
+          - containerPort: 8888
+            name: notebook-port
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          volumeMounts:
+          - mountPath: app/producer-data
+            name: producer-data
+          - mountPath: app/request-producer-data
+            name: request-producer-data
+            # - mountPath: app/keystore
+            #  name: kafka-keystore-volume
+            #  - mountPath: app/truststore
+            # name: kafka-truststore-volume
+
+            #  serviceAccountName: kafka-user
+      volumes:
+        - name: producer-data
+          persistentVolumeClaim:
+            claimName: producer-data
+        - name: request-producer-data
+          persistentVolumeClaim:
+            claimName: request-producer-data
+
+            #        - name: kafka-keystore-volume
+            #          secret:
+            #            secretName: kafka-ssl-secret
+            #            items:
+            #              - key: kafka.keystore.jks
+            #    path: keystore/kafka.keystore.jks
+            #  - name: kafka-truststore-volume
+            # secret:
+            # secretName: kafka-ssl-secret
+            #items:
+            #  - key: kafka.truststore.jks
+            #    path: truststore/kafka.truststore.jks
+    #  affinity:
+    #    podAntiAffinity:
+    #      requiredDuringSchedulingIgnoredDuringExecution:
+    #      - labelSelector:
+    #          matchExpressions:
+    #          - key: app
+    #            operator: In
+    #            values:
+    #            - request-sts
+    #            - prod-sts
+    #            - cons-sts
+    #            - merge-sts
+    #            - kafka
+    #            - kafka-zookeeper
+    #        topologyKey: "kubernetes.io/hostname"
+
