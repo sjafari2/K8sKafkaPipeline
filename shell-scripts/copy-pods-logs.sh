@@ -4,7 +4,7 @@
 namespace="kafkastreamingdata"
 source_paths=("app/logs/request" "app/logs/producer/" "app/logs/consumer/" "app/logs/" "app/logs/pascal-g/mergedResult/")
 selector_pods=("request" "producer" "consumer" "consumer" "merge")
-container_names=("request-sts" "producer-container" "consumer-container" "application-container" "merge-sts")
+container_names=("request-container" "producer-container" "consumer-container" "application-container" "merge-container")
 
 # Define the destination directory on the local machine
 destination="./data/result-01-24-2024/logs"

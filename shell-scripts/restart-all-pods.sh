@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pod_names=("consumer" "producer" "request" "merge")
+pod_names=("request" "producer" "consumer" "merge")
 
 for pod_name in "${pod_names[@]}";do
 # shellcheck disable=SC1073

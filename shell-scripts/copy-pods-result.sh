@@ -2,12 +2,12 @@
 
 # Define the namespace and paths to source directories within the pods
 namespace="kafkastreamingdata"
-source_paths=("app/consumer-app-data" "app/app-merge-data" "app/merged-clstr-data")
-selector_pods=("consumer" "consumer" "merge")
-container_names=("consumer-container" "application-sts" "merge-sts")
+source_paths=("app/request-data" "/app/request-producer-data" "app/consumer-app-data" "app/app-merge-data" "app/merged-clstr-data")
+selector_pods=("request" "producer" "consumer" "consumer" "merge")
+container_names=("request-container" "producer-container" "consumer-container" "application-container" "merge-container")
 
 # Define the destination directory on the local machine
-destination="./data/result-11-28-2023/pickles"
+destination="./data"
 
 # Loop through the source paths and pods
 for i in "${!source_paths[@]}"; do

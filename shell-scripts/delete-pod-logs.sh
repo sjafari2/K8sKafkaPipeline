@@ -18,7 +18,7 @@ if [ -n "$matching_pods" ]; then
             echo "**************************************************************************" 
             if [[ "$matching_pod" == *"$consumer_keyword"* ]]; then 
             echo "Deleting log files in /app/logs for $matching_pod container application-sts"
-            kubectl exec -n "$namespace" "$matching_pod" -c application-sts -- find /app/logs -mindepth 1 -delete
+            kubectl exec -n "$namespace" "$matching_pod" -c application-container -- find /app/logs -mindepth 1 -delete
             echo "Log files in /app/logs for $matching_pod container application-sts deleted."
             echo "**************************************************************************"
             fi
