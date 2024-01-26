@@ -35,24 +35,38 @@ For graph representation, we use sparse adjacency vectors instead of traditional
 Twitter/X, initially known as Twitter, is a widely-used social network and a key platform for online communication and information spread. It has been a focal point for studying information dissemination during political crises, as highlighted in several academic works. For our project, Twitter/X serves as a primary data source.
 We sourced data from two repositories. First is the Github Russo Ukrainian War Dataset, providing tweet IDs. Using the Twitter API, we retrieved 57,384,192 tweets from 7,744,714 users, spanning from February 24, 2022, to February 14, 2023. The second repository is the COVID-19 Tweets repository, noted in a study by Chen E, Lerman K, and Ferrara E. This collection focuses on COVID-19 related tweets, totaling 1,785,043,839 English tweets gathered from January 2020 to February 2023, also retrieved using the Twitter API. These extensive datasets form the foundation of our analysis.
 
-## Insatllation
-For ruuning pipeline correctly, you need to first install these packages:
-- Python 3.7.16
+## Prerequisites
+- Python 3.8.x
 - Kafka-python 2.0.2
 - Kubernetes  v1.28.3
 - Docker 0.19.0
   
+All the other required packages would be installed by developing the docker images. The list of these packages for producer, consumer, application, and merge pods are in requirments.txt file. For request pod, the list of packages are in request-requirments.txt file.
 
 
-## Running The Code
+## Running Pipeline
+For running the whole pipeline, we need to run the .sh files mentioned below in order:
 
-For running the code in each stage, we need to run the .sh files in each stage. Follow the below running in order:
+### Creating Docker Images 
+- ./shell-scripts/docker-all-pods.sh
 
+### Deploying Kafka-Python 
+We deploy Kafka Bitnami Helm Chart for installing Kafak-Python. In the latest published version, Kafka does not need Zookeepr. 
 - ./shell-scripts/docker-all-pods.sh
 - ./shell-scripts/helm-install.sh
+  
+### Deploying Pods 
 - ./shell-scripts/deploy-all-pods.sh
+  
+### Running Pods  
 - ./shell-scripts/run-all-pods.sh
 
-## The Results
+### The Results
 
 The final result would be in the last pod, Merge Pod in path ./request-data.
+
+# Contributaions
+Dr. Patrick Bridges, University of New Mexico
+Dr. Trilce Estrada, University of New Mexico
+Soheila Jafari Khouzani, University of New Mexico
+Nidia Vaquera Chavez, University of New Mexico
