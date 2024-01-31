@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # RealTime-Streaming-Pipeline
 =======
 ## Project Description
@@ -76,4 +76,4 @@ Dr. Patrick Bridges, University of New Mexico
 Dr. Trilce Estrada, University of New Mexico
 Soheila Jafari Khouzani, University of New Mexico
 Nidia Vaquera Chavez, University of New Mexico
->>>>>>> kafka-kubernetes-pipeline
+
