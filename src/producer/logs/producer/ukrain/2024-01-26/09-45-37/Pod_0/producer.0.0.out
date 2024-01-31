@@ -1,4 +1,0 @@
-[nltk_data] Downloading package stopwords to
-[nltk_data]     /Users/soheila/nltk_data...
-[nltk_data]   Package stopwords is already up-to-date!
-ERROR:root:Exception while creating Kafka Producer: NoBrokersAvailable
