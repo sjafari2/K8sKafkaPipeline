@@ -1,4 +1,11 @@
+.ipynb_checkpoints
+.idea
+*jupyterlab*
+k8s/secrets
+src/backup
+*logs*
 unwanted_files
 kafka-temp
 venv
 *.pyc
+.out
