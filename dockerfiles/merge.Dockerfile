@@ -39,7 +39,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
 WORKDIR /app
 COPY ./src/merge .
 COPY ./src/run-jupyterlab.sh .
-COPY ./dockefiles/pipeline-configmap.yaml .
+COPY ./src/pipeline-configmap.yaml .
 RUN chown -R sjafari:sjafari /app \
     && chmod 755 runmerge.sh
 

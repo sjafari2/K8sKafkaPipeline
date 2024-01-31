@@ -20,6 +20,7 @@ for part in "${cluster_parts[@]}"; do
         echo "Error applying $part."
         echo "$apply_output"
         error_occurred=1  # Set the error flag
+        break
     else
         echo "$apply_output"
 
@@ -31,33 +32,47 @@ for part in "${cluster_parts[@]}"; do
     fi
 done
 
-# Additional parts of your script remain the same...
-
 # Function to check if all pods are running
 all_pods_running() {
-    ! kubectl get pods -n "$namespace" -o jsonpath='{.items[?(@.status.phase!="Running")].metadata.name}' | grep -q .
-}
-
-# Check if any StatefulSet was restarted and if so, check all pods
-if [[ $restart_statefulsets -eq 1 ]]; then
-    echo "Waiting for all pods to be running..."
-    start_time=$(date +%s)
-    while ! all_pods_running; do
-        current_time=$(date +%s)
-        if [[ $((current_time - start_time)) -gt 120 ]]; then  # 2 minutes timeout
-            echo "Timeout reached. Not all pods are running."
-            exit 1
-        fi
-        sleep 5
-    done
-    echo "All pods are running."
-fi
+     echo "Checking if all pods are running in namespace $namespace..."
+    non_running_pods=$(kubectl get pods  -n $namespace --field-selector status.phase!="Running" -o=jsonpath='{.items[*].metadata.name}')
+    #if [[ "$non_running_pods" == "!" ]]; then
+    #  return 0
+    #fi
+    if [[ -z "$non_running_pods" ]]; then
+        return 0
+    else
+        echo "Non-running pods: $non_running_pods"
+        return 1
+    fi
+    }
 
 # Check if any error occurred
 if [ $error_occurred -eq 1 ]; then
     echo "One or more operations failed."
     exit 1
-else
-    echo "All operations completed successfully."
-    exit 0
 fi
+
+# Check pods status after configuration
+
+echo "Checking pods status..."
+while true; do
+    if all_pods_running; then
+        echo "All pods are running."
+        exit 0
+    else
+        echo "Waiting for pods to be in the running state..."
+    fi
+
+    # Watching pods status
+    kubectl get pods -n "$namespace" --watch &
+
+    # Wait for a short period before checking again
+    sleep 5
+
+    # Kill the kubectl watch process to refresh the watch on the next iteration
+    pkill -f "kubectl get pods -n $namespace --watch"
+done
+
+echo "All operations completed successfully."
+exit 0

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source parseYaml.sh
-eval $(parse_yaml ./src/pipeline-configmap.yaml)
+eval $(parse_yaml ./pipeline-configmap.yaml)
 trap "exit" INT TERM
 trap "kill 0" EXIT
 
@@ -25,8 +25,8 @@ CURRENT_TIME=$(TZ=America/Denver date +"%H-%M-%S")
 log_path="./logs/request/${CURRENT_DATE}/${CURRENT_TIME}"
 
 
-mkdir -p "${log_path}"
-mkdir -p "$output_path/"
+mkdir -p ${log_path}
+mkdir -p ${output_path}/
 chmod -R 777 ./logs/request
 #sudo chmod 777 "${output_path}"
 

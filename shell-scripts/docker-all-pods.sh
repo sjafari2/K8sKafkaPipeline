@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Function to clean up dangling images
+cleanup_dangling_images() {
+    echo "Cleaning up dangling images..."
+    docker rmi $(docker images -f "dangling=true" -q)
+
+    # Check if there are any dangling images
+    if [[ -z "$dangling_images" ]]; then
+        echo "No dangling images to clean up."
+    else
+        echo "Cleaning up dangling images..."
+        docker rmi $dangling_images
+    fi
+}
+
 # Function to process each pod
 process_pod() {
     local image_name="$1"
@@ -24,6 +38,9 @@ process_pod() {
         echo "Error pushing sjafari2/kafka${image_name}:latest"
         return 1
     fi
+
+    # Cleanup dangling images
+    cleanup_dangling_images
 
     echo "Successfully processed ${image_name}:${current_date}"
     return 0

@@ -67,7 +67,7 @@ for ((i = 0; i < ${#script_order[@]}; i++)); do
 
   pod_names=($(kubectl get pods --selector="$label" -o jsonpath="{.items[*].metadata.name}"))
   for pod_name in "${pod_names[@]}"; do
-    pod_index=$(echo "$pod_name" | grep -oP 'sts-\K\d+')
+    pod_index=$(echo "$pod_name" | sed 's/.*sts-\([0-9]\+\).*/\1/')
     if ! wait_for_pod_running "$pod_name"; then
       global_error=1
       break

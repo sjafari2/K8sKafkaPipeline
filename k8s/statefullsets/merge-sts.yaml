@@ -20,7 +20,7 @@ spec:
         app: "merge-sts"
     spec:
       containers:
-        - name: "merge-sts"
+        - name: "merge-container"
           image: sjafari2/kafkamerge:latest
           env:
           - name: POD_ORDINAL
