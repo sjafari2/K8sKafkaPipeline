@@ -42,7 +42,8 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
 WORKDIR /app
 COPY ./src/consumer .
 COPY ./src/run-jupyterlab.sh .
-COPY ./dockerfiles/pipeline-configmap.yaml .
+COPY ./src/pipeline-configmap.yaml .
+
 RUN chown -R sjafari:sjafari /app \
     && chmod 755 runconsumer.sh
 

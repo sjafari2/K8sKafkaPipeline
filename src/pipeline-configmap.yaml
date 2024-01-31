@@ -65,7 +65,7 @@ data:
 
   ##### REQUEST POD VARIABLES ########################
   REQUEST_COUNT: "1"
-  RequestURL: 'http://127.0.0.1:8000/'
+  RequestURL: 'http://127.0.0.1:8080/'
   RequestInputPath: "./request-data/simulator"
   RequestOutputPath: "./request-producer-data"
   StartDate : '2022-8-01-00'

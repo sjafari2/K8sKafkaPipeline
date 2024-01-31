@@ -41,7 +41,7 @@ RUN wget -O - https://downloads.apache.org/kafka/3.4.1/kafka_2.13-3.4.1.tgz | ta
 WORKDIR /app
 COPY ./src/application .
 COPY ./src/run-jupyterlab.sh .
-COPY ./dockerfiles/pipeline-configmap.yaml .
+COPY ./src/pipeline-configmap.yaml .
 
 # Change the owner of all files under /app and /install to sjafari and give necessary permissions
 RUN chown -R sjafari:sjafari /app \

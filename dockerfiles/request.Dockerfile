@@ -40,7 +40,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
 WORKDIR /app
 COPY ./src/request .
 COPY ./src/run-jupyterlab.sh .
-COPY ./dockerfiles/pipeline-configmap.yaml .
+COPY ./src/pipeline-configmap.yaml .
 
 # Create a directory for request data and copy data into it
 RUN mkdir -p ./request-data \

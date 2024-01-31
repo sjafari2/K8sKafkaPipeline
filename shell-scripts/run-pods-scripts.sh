@@ -45,7 +45,7 @@ find_pods_by_keyword_and_execute_scripts() {
 if [ "$1" == "all" ]; then
   # Execute scripts in all pods
   pod_labels=("app=request-sts" "app=producer-sts" "app=consumer-sts" "app=consumer-sts" "app=merge-sts")
-  containers=("request-sts" "producer-sts" "consumer-sts" "application-sts" "merge-sts")
+  containers=("request-container" "producer-container" "consumer-container" "application-container" "merge-container")
 
   for ((i = 0; i < ${#script_order[@]}; i++)); do
     keyword="${pod_labels[i]%-sts}"  # Extract keyword from label
@@ -61,4 +61,3 @@ else
     find_pods_by_keyword_and_execute_scripts "$keyword" "$label" "$container"
   done
 fi
-

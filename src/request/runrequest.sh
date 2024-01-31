@@ -1,10 +1,12 @@
 #!/bin/bash
 
 source parseYaml.sh
-eval $(parse_yaml pipeline-configmap.yaml)
+eval $(parse_yaml ./pipeline-configmap.yaml)
 trap "exit" INT TERM
 trap "kill 0" EXIT
 
+#home_path="/Users/soheila/PycharmProjects/pipelineProject/RealTime-Streaming-Pipeline"
+#cd "${home_path}"
 input_path=${data_RequestInputPath}
 output_path=${data_RequestOutputPath}
 start_date=${data_StartDate}
@@ -13,9 +15,8 @@ window=${data_RequestWindow}
 wait_time=${data_Wait}
 pod_count=${data_PRODUCER_POD_COUNT}
 prod_count=${data_PRODUCER_COUNT}
-total_prod=$((pod_count * prod_count)) 
-#pod_index=$1
-#prod_index=$2
+total_prod=$((pod_count * prod_count))
+
 echo start date is $start_date
 
 
@@ -24,8 +25,8 @@ CURRENT_TIME=$(TZ=America/Denver date +"%H-%M-%S")
 log_path="./logs/request/${CURRENT_DATE}/${CURRENT_TIME}"
 
 
-mkdir -p "${log_path}"
-mkdir -p "$output_path/"
+mkdir -p ${log_path}
+mkdir -p ${output_path}/
 chmod -R 777 ./logs/request
 #sudo chmod 777 "${output_path}"
 
@@ -63,12 +64,20 @@ python3 request-notification.py &
 first_iteration=true
 
 add_window_to_date() {
-   # in linux
-   # date -d "$1 + $window hours" +"%Y-%m-%d %H:%M:%S"
-    # in mac
-    date -j -v+"$window"H -f "%Y-%m-%d %H:%M:%S" "$1" +"%Y-%m-%d %H:%M:%S"
-
+    local new_date
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux system
+        new_date=$(date -d "$1 + $window hours" +"%Y-%m-%d %H:%M:%S")
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS system
+        new_date=$(date -v+"$window"H -f "%Y-%m-%d %H:%M:%S" "$1" +"%Y-%m-%d %H:%M:%S")
+    else
+        echo "Unsupported OS for date calculation"
+        exit 1
+    fi
+    echo "$new_date"
 }
+
 
 while true; do
     # Check if there are new files in the directory

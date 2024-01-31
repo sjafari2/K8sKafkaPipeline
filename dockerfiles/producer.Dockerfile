@@ -36,7 +36,7 @@ RUN chown -R sjafari:sjafari /kafka /install
 WORKDIR /app
 COPY ./src/producer .
 COPY ./src/run-jupyterlab.sh .
-COPY ./dockerfiles/pipeline-configmap.yaml .
+COPY ./src/pipeline-configmap.yaml .
 
 # Change the owner of all files under /app and /install to sjafari and give necessary permissions
 RUN chown -R sjafari:sjafari /app /install \
