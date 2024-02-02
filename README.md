@@ -51,25 +51,34 @@ All the other required packages would be installed by developing the docker imag
 For running the whole pipeline, you need to run the runPipeline.sh file in shell-scripts directory by this command:
 #### ./shell-scripts/runPipeline.sh
 
-runPipeline.sh included these stages:
+There are multiple stages defined in runPipeline.sh file. Here we describe some of the main import ones in order. For a comprehensive explaination of the commands, read runPipeline.sh file.
+
+#### Deleting Dangling Images
+To make enough space for developying new images, we first delete dangling images.
+- ./shell-scripts/delete-dangling-img.sh
 
 ##### Creating Docker Images 
+We create the required images by running this command:
 - ./shell-scripts/docker-all-pods.sh
 
-##### Deploying Kafka-Python 
+##### Creating Minikube Kubernetes Cluster
+In order to create a Kubernetes Cluster with one node, we use Minikube. You can use any other package.
+- ./shell-scripts/minikube-status-check.sh "${minikube_cpu}" "${minikube_memory}"
+
+##### Deploying Kafka Bitnami Helm Chart (Kafka-Python) 
 We deploy Kafka Bitnami Helm Chart for installing Kafak-Python. In the latest published version, Kafka does not need Zookeepr. 
-- ./shell-scripts/docker-all-pods.sh
 - ./shell-scripts/helm-install.sh
   
-##### Deploying Pods 
-- ./shell-scripts/deploy-sts.sh
+##### Deploying Cluster 
+- ./shell-scripts/deploy-cluster.sh "${restart_statefullsets}"
   
 ##### Running Pods  
+Running all pods scripts.
 - ./shell-scripts/run-all-pods-scripts.sh
 
 ### Results
 
-The final result would be in the last pod, Merge Pod in path ./request-data.
+The final result would be in the last pod, which is Merge Pod in path ./request-data.
 
 ### Contributaions
 Dr. Patrick Bridges, University of New Mexico
