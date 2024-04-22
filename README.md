@@ -3,7 +3,7 @@
 =======
 ## Project Description
 In our project, we created a data processing system using a Kafka server, organized with Docker and Kubernetes. It has five main parts: Request, Producer, Consumer, Application, and Merge. Each part sends its results to the next one. In the Application and Merge parts, we use the Pascal-G algorithm on a Twitter dataset to find out how many clusters there are.
-This project is part of a bigger effort to understand clusters in data that comes in quickly. We use Kafka and Kubernetes to manage and process this data, turning it into a graph for detailed study. Everything, including Kafka parts and the cluster analysis tool, is neatly organized in Kubernetes using Pods. The "PASCAL-G" algorithm, great for analyzing streaming data, is a key part of our analysis.
+This project is part of a bigger effort to understand clusters in data that comes in quickly. We use Kafka and Kubernetes to manage and process this data, turning it into a graph for detailed study. Everything, including Kafka parts and the cluster analysis tool, is neatly organized in Kubernetes using Pods. The "PASCAL-G" algorithm, which is great for analyzing streaming data, is a key part of our analysis.
 We've provided a figure below and more explanations later on for those who want to understand our system better. This simplified overview is meant for our GitHub page to help people get the gist of what our project does.
 
 ## Achievements
