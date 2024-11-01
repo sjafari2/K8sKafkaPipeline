@@ -1,12 +1,12 @@
 
-# Data Streaming Pipeline 
+# Data Streaming Pipeline Analysis Utilizing Pascal-G Algorithm
 =======
 ## Introduction
 In this project, we creat a data streaming pipeline using Kafka, Dockerized and orchestrated with Kubernetes. It has five main phases: Request, Producer, Kafak Brokers, Consumer-Application, and Merge. Each section is neatly organized in Kubernetes using statefulsets. Each section sends the data to the next section. In the Application and Merge phases, we apply the Pascal-G algorithm on a Twitter dataset to find out how many clusters this Tweeter data set has.
 
 We've provided a figure below and more explanations later on for those who want to understand our system better.
 ## Architecture
- 
+![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
 
 
 #### Request Pod
@@ -29,19 +29,19 @@ The merge pod consists of a single merge container and includes a local persiste
 In our system's first three stages, we create a weighted word co-occurrence graph. This graph shows words as nodes, and edges link nodes when their corresponding words appear together in a document, like tweets on social media. We assign weights to these edges based on the frequency of word pairs occurring together within a certain timeframe, such as an hour or a day. A higher frequency results in a stronger edge weight, crucial for the graph clustering algorithm's effectiveness.
 For graph representation, we use sparse adjacency vectors instead of traditional edge lists or adjacency matrices. This approach is key to handling streaming data, as it allows for independent node processing and parallel clustering tasks. Each vector represents a node and includes a weight for each co-occurrence with another node. To efficiently construct these vectors, we implement a hashing mechanism. Words are hashed into numeric indices for the vectors, managing potential collisions by using a broad range of hash values. This ensures minimal overlap of different words into the same hash value, keeping the system efficient and accurate.
 
-## Data Set
+### Data Set
 Twitter/X, initially known as Twitter, is a widely-used social network and a key platform for online communication and information spread. It has been a focal point for studying information dissemination during political crises, as highlighted in several academic works. For our project, Twitter/X serves as a primary data source.
 We sourced data from two repositories. First is the Github Russo Ukrainian War Dataset, providing tweet IDs. Using the Twitter API, we retrieved 57,384,192 tweets from 7,744,714 users, spanning from February 24, 2022, to February 14, 2023. The second repository is the COVID-19 Tweets repository, noted in a study by Chen E, Lerman K, and Ferrara E. This collection focuses on COVID-19 related tweets, totaling 1,785,043,839 English tweets gathered from January 2020 to February 2023, also retrieved using the Twitter API. These extensive datasets form the foundation of our analysis.
 
-# Technologies Used
+### Technologies Used
 1. Prgramming Language: Python
-2. Data Streaming Architecture: Kafka
+2. Data Streaming Architecture: Kafka Bitnami Helm Chart https://artifacthub.io/packages/helm/bitnami/kafka
 3. Scripting Language: Shell Scripting
 4. Containerization: Docker
 5. Container Orchestration Tool: Kubernetes
-6. Cloud Space for running the Pipeline: Nautilus https://ucsd-prp.gitlab.io/
+6. Cloud Space for running the Pipeline: Nautilus Cloud https://ucsd-prp.gitlab.io/
    
-## Prerequisites
+### Prerequisites
 - Python 3.8.x
 - Kafka-python 2.0.2
 - Kubernetes  v1.28.3
@@ -50,7 +50,7 @@ We sourced data from two repositories. First is the Github Russo Ukrainian War D
 All the other required packages would be installed by developing the docker images. The list of these packages for producer, consumer, application, and merge pods are in requirments.txt file. For request pod, the list of packages are in request-requirments.txt file.
 
 
-## Running Pipeline
+### How to Run the Pipeline
 For running the whole pipeline, you need to run the runPipeline.sh file in shell-scripts directory by this command:
 #### ./shell-scripts/runPipeline.sh
 
@@ -84,8 +84,10 @@ Running all pods scripts.
 The final result would be in the last pod, which is Merge Pod in path ./request-data.
 
 ### Contributaions
-Dr. Patrick Bridges, University of New Mexico
-Dr. Trilce Estrada, University of New Mexico
-Soheila Jafari Khouzani, University of New Mexico
-Nidia Vaquera Chavez, University of New Mexico
+Soheila Jafari Khouzani, Ph.D. Student, University of New Mexico
+Nidia Vaquera Chavez, Ph.D. Student, University of New Mexico
+Dr. Patrick Bridges, Associate Professor, University of New Mexico
+Dr. Trilce Estrada, Associate Professor, University of New Mexico
+
+
 
