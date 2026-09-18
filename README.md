@@ -1,4 +1,4 @@
-# Streaming Kafka Pipeline: distributed streaming graph analysis with PASCAL-G
+# A Streaming Kafka Pipeline for Graph Analysis with PASCAL-G
 
 A University of New Mexico research pipeline for transforming streaming text into graph clusters using Apache Kafka, PASCAL-G, Docker, and Kubernetes on the National Research Platform's Nautilus infrastructure.
 
