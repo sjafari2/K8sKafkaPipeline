@@ -1,6 +1,6 @@
 # Reported findings and limitations
 
-Source: supplied Research.gov award 1807563 final annual report preview, pp. 2-4. These are historical report findings, not experiments rerun in September 2026.
+Source: supplied Research.gov award 1807563 final annual report preview, pp. 2-4. These findings are attributed to the report; the documentation review did not rerun the experiments.
 
 ## Pipeline findings
 
@@ -25,4 +25,4 @@ At revision `108a4edc0bad38c4e130bd2906fe8eb31d7205f8`:
 - `src/merge/runmerge.sh` initializes `all_files_found=true` while the required-file checks are commented out. The request notification is also commented out.
 - `src/producer/KafkaProducer.py` uses `acks=1`. That setting alone neither explains the historical missing-data observation nor proves downstream completion.
 
-These are static observations. No historical runtime was redeployed and no new performance claims are made. Source files are preserved in this documentation update so historical behavior remains inspectable.
+These are static observations. The runtime was not redeployed and no new performance claims are made. Source files are preserved in this documentation update so the reviewed behavior remains inspectable.

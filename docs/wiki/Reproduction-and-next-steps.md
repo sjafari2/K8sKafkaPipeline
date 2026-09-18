@@ -1,8 +1,8 @@
 # Reproduction and next steps
 
-This is a historical research implementation. Its former dependency list is not a currently validated installation recipe. Begin from a fixed revision, preserve source and logs, and validate the environment before launching workloads.
+This is a research implementation for streaming graph analysis. Its former dependency list is not a currently validated installation recipe. Begin from a fixed revision, preserve source and logs, and validate the environment before launching workloads.
 
-1. Select the historical `v1.0` tag or another recorded commit. Record the full SHA; do not silently replace a historical version with a newer one.
+1. Select the `v1.0` tag or another recorded commit. Record the full SHA; do not silently replace a historical version with a newer one.
 2. Inspect `dockerfiles/`, package manifests, Kafka Helm values, namespace, service endpoints, resource requests, and storage claims. Reconcile configuration copies under `k8s/`, `helm/`, and `dockerfiles/`.
 3. Correct and test the launcher issues listed in Findings-and-limitations before using `runPipeline.sh`. Review individual scripts for image cleanup, restarts, and cluster changes. The existing top-level launcher is not a validated one-command deployment.
 4. Use a small controlled synthetic text snapshot with known word co-occurrences. Check producer records, consumed records, sparse matrix entries, local fingerprints, and final merge output against expected values.

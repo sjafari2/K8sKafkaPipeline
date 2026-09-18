@@ -1,12 +1,14 @@
-# K8sKafkaPipeline project wiki
+# K8sKafkaPipeline: distributed streaming graph analysis
 
-This wiki documents the historical streaming graph-analysis project using Kafka, Kubernetes, and PASCAL-G. Documentation prepared September 15, 2026; historical source and dates are preserved.
+A University of New Mexico research pipeline connecting text ingestion, Kafka, sparse graph construction, local PASCAL-G clustering, and result merging on Kubernetes/Nautilus.
 
-- [[Project history and evidence|Project-history]]
+The pipeline supports investigation of graph analytics, distributed workflow design, data completeness, and performance across dependent processing stages. The NSF award 1807563 report identifies this repository as a research product.
+
 - [[Architecture and data flow|Architecture-and-data-flow]]
 - [[Reported findings and limitations|Findings-and-limitations]]
 - [[Reproduction and next steps|Reproduction-and-next-steps]]
+- [[Project history and evidence|Project-history]]
 
-[Repository](https://github.com/sjafari2/K8sKafkaPipeline) | [Historical release](https://github.com/sjafari2/K8sKafkaPipeline/tree/v1.0)
+[Repository and research overview](https://github.com/sjafari2/K8sKafkaPipeline) | [Version 1.0](https://github.com/sjafari2/K8sKafkaPipeline/tree/v1.0)
 
-The supplied NSF report identifies this repository as a project product. This is a retrospective research account, not an NSF endorsement or a report of newly completed experiments.
+The documentation distinguishes implemented components, report findings, and proposed improvements. It does not introduce new benchmark results.

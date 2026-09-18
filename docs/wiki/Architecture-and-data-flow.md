@@ -1,6 +1,6 @@
 # Architecture and data flow
 
-The historical pipeline transforms text snapshots into weighted word co-occurrence graphs and then computes PASCAL-G clusters. The report describes deployment on NRP Nautilus using Docker, Kubernetes StatefulSets, shared persistent volumes, and Bitnami Kafka Helm configuration (pp. 2-3).
+The pipeline transforms text snapshots into weighted word co-occurrence graphs and then computes PASCAL-G clusters. The report describes deployment on NRP Nautilus using Docker, Kubernetes StatefulSets, shared persistent volumes, and Bitnami Kafka Helm configuration (pp. 2-3).
 
 ```mermaid
 flowchart LR
@@ -29,3 +29,17 @@ A word is a graph node; repeated co-occurrence contributes edge weight. The prod
 PASCAL-G uses cluster fingerprints and merges sufficiently similar fingerprints. The separate MPI/Dask algorithm work belongs to the broader collaborative project. An algorithm's robustness to node order does not establish transport completeness or end-to-end delivery order.
 
 The report describes a feedback notification from merge to request. At the reviewed source revision, the notification in `src/merge/runmerge.sh` is commented out. Treat that feedback loop as documented design, not a verified active behavior of this checkout.
+
+## Coordination and intermediate results
+
+The request/API simulator provides controlled input snapshots. Producers index their input and build hashed sparse adjacency records so word relationships can be represented without one centralized word-to-column mapping. Consumers assemble graph data for the local clustering application. Consumer/application containers share persistent storage, and the merge process reads local cluster outputs from shared storage before writing the final result.
+
+These stages have different completion boundaries: publishing a batch, consuming it, assembling its matrix, completing local clustering, and completing the final merge are separate events. A complete evaluation must follow the same input snapshot across all of them. The report's proposed sequence tagging addresses this need for batch identity and completeness across stages.
+
+## Configuration dimensions
+
+Producer process count, consumer process count, replica counts, topic layout, batch size, graph-column range, clustering similarity thresholds, and persistent-volume paths influence the workflow. The producer entry point exposes topic count, batch size, process/pod indices, and column-range options. The clustering entry point exposes similarity measures and thresholds. These controls define experiments; their presence does not establish that every combination has been evaluated.
+
+## Application meaning
+
+A time-window snapshot contains word relationships from the selected text collection. PASCAL-G identifies graph clusters through fingerprint-based local assignment and merging. These clusters can support analysis of evolving discourse, but additional methods and validation are needed to make claims about sentiment, misinformation, or real-world events.
