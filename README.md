@@ -17,16 +17,9 @@ The project brings together high-performance computing, graph mining, and distri
 
 ## How the system works
 
-```mermaid
-flowchart LR
-    A[Request / API simulator] --> B[Producer processes]
-    B --> C[Kafka brokers and topics]
-    C --> D[Consumer processes]
-    D --> E[Sparse graph matrices]
-    E --> F[Local PASCAL-G clustering]
-    F --> G[Merge process]
-    G --> H[Final clustering results]
-```
+[![Streaming pipeline model: text ingestion, Kafka, graph construction, and PASCAL-G](images/streaming-pipeline-model.jpg)](images/streaming-pipeline-model.jpg)
+
+*Pipeline model from slide 4 of the project presentation. Click the diagram to view it at full size. Spark Streaming represents a proposed integration in that presentation; the repository implements the consumer, local PASCAL-G application, and merge stages described below.*
 
 | Component | Role in the workflow | Implementation |
 | --- | --- | --- |

@@ -1,6 +1,6 @@
-[[Home]]
+[Home](Home.md)
 
-[[Project-history]]
-[[Architecture-and-data-flow]]
-[[Findings-and-limitations]]
-[[Reproduction-and-next-steps]]
+[Project-history](Project-history.md)
+[Architecture-and-data-flow](Architecture-and-data-flow.md)
+[Findings-and-limitations](Findings-and-limitations.md)
+[Reproduction-and-next-steps](Reproduction-and-next-steps.md)

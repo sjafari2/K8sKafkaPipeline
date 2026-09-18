@@ -2,6 +2,10 @@
 
 The pipeline transforms text snapshots into weighted word co-occurrence graphs and then computes PASCAL-G clusters. The report describes deployment on NRP Nautilus using Docker, Kubernetes StatefulSets, shared persistent volumes, and Bitnami Kafka Helm configuration (pp. 2-3).
 
+[![Pipeline model from the project presentation](../../images/streaming-pipeline-model.jpg)](../../images/streaming-pipeline-model.jpg)
+
+*Presentation slide 4 illustrates the pipeline model, including a proposed Spark Streaming integration. The workflow below describes the repository stages.*
+
 ```mermaid
 flowchart LR
   A[API simulator and request client] --> B[Shared input storage]
